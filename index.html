@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>卿涛 · Qing Tao</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 背景装饰 -->
+  <div class="bg-decor">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="nav-wrap" id="nav">
+    <div class="nav-inner">
+      <a href="#home" class="brand" data-tab="home">
+        <span class="brand-cn">卿涛</span>
+        <span class="brand-en">QING TAO</span>
+      </a>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="home" role="tab">HOME</button>
+        <button class="tab" data-tab="about" role="tab">PROFILE</button>
+        <button class="tab" data-tab="works" role="tab">WORKS</button>
+        <button class="tab" data-tab="gallery" role="tab">STORY</button>
+        <button class="tab" data-tab="video" role="tab">VIDEO</button>
+        <button class="tab" data-tab="updates" role="tab">NEWS</button>
+        <button class="tab" data-tab="guestbook" role="tab">GUESTBOOK</button>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 首页 -->
+    <section class="page active" id="home" role="tabpanel">
+      <div class="hero-text">
+        <p class="hero-en">QING TAO</p>
+        <h1 class="hero-cn">卿&nbsp;&nbsp;涛</h1>
+        <p class="hero-sub">青山在，人未老</p>
+        <div class="hero-divider"></div>
+        <p class="hero-desc">因为时世艰辛，你要等我，让我们怀着希望去生活</p>
+        <div class="hero-tags">
+          <span class="tag">主持人</span>
+          <span class="tag">制作人</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关于 -->
+    <section class="page" id="about" role="tabpanel">
+      <div class="page-head">
+        <span class="page-en">PROFILE</span>
+        <h2 class="page-cn">关 于 卿 涛</h2>
+        <div class="page-line"></div>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-card profile-card-left" data-profile="tao">
+          <div class="profile-photo" data-profile-photo>
+            <span class="profile-photo-hint">预留图片</span>
+          </div>
+          <div class="profile-tag tag-light"><b>周&nbsp;涛</b></div>
+        </div>
+        <div class="profile-middle" data-profile="middle">
+          <p>卿本温婉，涛自从容。<br/>同台十余载，各成风骨。</p>
+        </div>
+        <div class="profile-card profile-card-right" data-profile="qing">
+          <div class="profile-photo" data-profile-photo>
+            <span class="profile-photo-hint">预留图片</span>
+          </div>
+          <div class="profile-tag tag-dark"><b>董&nbsp;卿</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 作品 -->
+    <section class="page" id="works" role="tabpanel">
+      <div class="page-head">
+        <span class="page-en">DISCOGRAPHY</span>
+        <h2 class="page-cn">作 品 集</h2>
+        <div class="page-line"></div>
+      </div>
+      <div class="works-layout">
+        <aside class="works-side works-side-left">
+          <div class="glass-menu" data-author="tao">
+            <div class="glass-menu-glyph">涛</div>
+            <ul class="glass-menu-list">
+              <li class="glass-menu-item" data-cat="host">主持</li>
+              <li class="glass-menu-item" data-cat="produce">制作</li>
+              <li class="glass-menu-item" data-cat="judge">评委</li>
+              <li class="glass-menu-item" data-cat="music">音乐</li>
+            </ul>
+          </div>
+        </aside>
+        <div class="works-center">
+          <div class="works-grid" id="worksGrid">
+            <div class="works-col works-col-left"  id="worksColLeft"></div>
+            <div class="works-col works-col-right" id="worksColRight"></div>
+          </div>
+        </div>
+        <aside class="works-side works-side-right">
+          <div class="glass-menu glass-menu-right" data-author="qing">
+            <div class="glass-menu-glyph">卿</div>
+            <ul class="glass-menu-list glass-menu-list-right">
+              <li class="glass-menu-item" data-cat="host">主持</li>
+              <li class="glass-menu-item" data-cat="produce">制作</li>
+              <li class="glass-menu-item" data-cat="judge">评委</li>
+              <li class="glass-menu-item" data-cat="music">音乐</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+      <div class="add-row" data-add="works"><button class="add-btn">+ 添加作品</button></div>
+    </section>
+
+    <!-- 考古 -->
+    <section class="page" id="gallery" role="tabpanel">
+      <div class="page-head">
+        <span class="page-en">STORY</span>
+        <h2 class="page-cn">考 古</h2>
+        <div class="page-line"></div>
+      </div>
+      <div class="masonry" id="storyGrid"></div>
+      <div class="add-row" data-add="story"><button class="add-btn">+ 添加考古</button></div>
+    </section>
+
+    <!-- 视频 -->
+    <section class="page" id="video" role="tabpanel">
+      <div class="page-head">
+        <span class="page-en">VIDEO</span>
+        <h2 class="page-cn">视 频</h2>
+        <div class="page-line"></div>
+      </div>
+      <div class="glass-grid video-grid" id="videoGrid"></div>
+      <div class="add-row" data-add="video"><button class="add-btn">+ 添加视频</button></div>
+    </section>
+
+    <!-- 动态 -->
+    <section class="page" id="updates" role="tabpanel">
+      <div class="page-head">
+        <span class="page-en">UPDATES</span>
+        <h2 class="page-cn">最 新 动 态</h2>
+        <div class="page-line"></div>
+      </div>
+      <div class="timeline" id="updatesList"></div>
+      <div class="add-row" data-add="update"><button class="add-btn">+ 添加动态</button></div>
+    </section>
+
+    <!-- 留言 -->
+    <section class="page" id="guestbook" role="tabpanel">
+      <div class="page-head">
+        <span class="page-en">GUESTBOOK</span>
+        <h2 class="page-cn">留 言 板</h2>
+        <div class="page-line"></div>
+      </div>
+      <div class="glass-grid">
+        <div class="glass-card">
+          <h3>写下你的话</h3>
+          <form class="guest-form" id="guestForm">
+            <input type="text" id="gbName" placeholder="昵称" required />
+            <textarea id="gbMsg" rows="4" placeholder="想对卿涛说的话……" required></textarea>
+            <button type="submit" class="btn-primary">发送留言</button>
+          </form>
+        </div>
+        <div class="glass-card">
+          <h3>粉丝留言</h3>
+          <div class="msg-list" id="msgList">
+            <div class="msg-item">
+              <b>青柠</b>
+              <p>新单曲循环了一整天，声音太治愈了！</p>
+            </div>
+            <div class="msg-item">
+              <b>山海</b>
+              <p>期待下一部作品，永远支持卿涛～</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>© 2026 卿涛 · QING TAO · Fan Site</p>
+    <div class="socials">
+      <span>微博</span><span>·</span>
+      <span>小红书</span><span>·</span>
+      <span>抖音</span><span>·</span>
+      <span>B站</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "qingtao-fan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "卿涛粉丝网站 · 部署于 Vercel，数据存储于 Turso (LibSQL)",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "init-db": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@vercel/blob": "^0.27.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
