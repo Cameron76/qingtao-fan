@@ -222,7 +222,126 @@ async function renderProfile() {
         photo.innerHTML = '';
       }
     }
+    // 名字存在 text_content 字段里（周涛/董卿）
+    if (p.text_content && (p.author_key === 'tao' || p.author_key === 'qing')) {
+      const tagEl = card.querySelector('.profile-tag b');
+      if (tagEl) tagEl.innerHTML = p.text_content.split('').join('&nbsp;');
+    }
+    // 中间文字（author_key='middle'）
+    if (p.author_key === 'middle') {
+      const mid = document.querySelector('.profile-middle');
+      if (mid && p.text_content) mid.textContent = p.text_content;
+    }
   });
+  addProfileControls();
+}
+
+// ============================================================
+//  个人简介编辑控件（两张卡片 + 中间区，仅 editing 模式下可见）
+// ============================================================
+function addProfileControls() {
+  document.querySelectorAll('.profile-card').forEach(card => {
+    if (card.querySelector('.item-ctrl')) return;
+    const key = card.dataset.profile; // 'tao' | 'qing'
+    card.appendChild(el('div', { class: 'item-ctrl' }, [
+      el('button', { class: 'ic-btn edit', title: '编辑',
+        on: { click: () => openProfileForm(card, key) } }, '✎')
+    ]));
+  });
+  const middle = document.querySelector('.profile-middle');
+  if (middle && !middle.querySelector('.item-ctrl')) {
+    middle.appendChild(el('div', { class: 'item-ctrl' }, [
+      el('button', { class: 'ic-btn edit', title: '编辑',
+        on: { click: () => openProfileForm(middle, 'middle') } }, '✎')
+    ]));
+  }
+}
+
+async function openProfileForm(host, kind) {
+  document.querySelectorAll('.inline-form').forEach(f => f.remove());
+
+  const form = el('div', { class: 'inline-form profile-form' });
+
+  if (kind === 'tao' || kind === 'qing') {
+    // ====== 卡片：上传图片 + 改名字 ======
+    let photoUrl = '';
+    const photoEl = host.querySelector('[data-profile-photo]');
+    if (photoEl && photoEl.style.backgroundImage) {
+      const m = photoEl.style.backgroundImage.match(/url\(["']?(.+?)["']?\)/);
+      if (m) photoUrl = m[1];
+    }
+
+    const preview = el('img', { class: 'if-preview', src: photoUrl || '' });
+    const urlInput = el('input', { type: 'text', value: photoUrl, placeholder: '图片 URL' });
+    urlInput.addEventListener('input', () => { preview.src = urlInput.value; });
+
+    const file = el('input', { type: 'file', accept: 'image/*', class: 'if-file' });
+    file.addEventListener('change', async () => {
+      if (!file.files[0]) return;
+      try {
+        const j = await API.upload(file.files[0]);
+        urlInput.value = j.data.url;
+        preview.src = j.data.url;
+      } catch (e) { alert('上传失败：' + e.message); }
+    });
+
+    // 名字（左周涛 / 右董卿）当前直接写在 HTML 里，这里把名字也存到 text_content 字段
+    const tagEl = host.querySelector('.profile-tag b');
+    const curName = tagEl ? tagEl.textContent.replace(/\s+/g, '') : '';
+    const nameInput = el('input', { type: 'text', value: curName, placeholder: '名字' });
+
+    form.append(
+      el('label', { class: 'if-row' }, [el('span', {}, '图片'), preview]),
+      el('label', { class: 'if-row' }, [el('span', {}, '上传/粘贴'), urlInput]),
+      el('label', { class: 'if-row' }, [el('span', {}, '文件'), file]),
+      el('label', { class: 'if-row' }, [el('span', {}, '名字'), nameInput]),
+    );
+
+    const save = el('button', { class: 'ic-btn save' }, '保存');
+    const cancel = el('button', { class: 'ic-btn cancel' }, '取消');
+    cancel.addEventListener('click', () => form.remove());
+    save.addEventListener('click', async () => {
+      save.disabled = true; save.textContent = '保存中…';
+      try {
+        await API.create('profile', {
+          author_key: kind,
+          photo_url: urlInput.value || null,
+          text_content: nameInput.value || ''
+        });
+        form.remove();
+        await renderProfile();
+      } catch (e) { alert('保存失败：' + e.message); save.disabled = false; save.textContent = '保存'; }
+    });
+
+    form.append(el('div', { class: 'if-actions' }, [save, cancel]));
+  } else {
+    // ====== 中间区：多行文本 ======
+    const ta = el('textarea', { class: 'if-textarea', rows: '6', placeholder: '在这里写一段介绍…' });
+    ta.value = host.textContent.trim();
+
+    const save = el('button', { class: 'ic-btn save' }, '保存');
+    const cancel = el('button', { class: 'ic-btn cancel' }, '取消');
+    cancel.addEventListener('click', () => form.remove());
+    save.addEventListener('click', async () => {
+      save.disabled = true; save.textContent = '保存中…';
+      try {
+        // 中间文字复用 author_key='middle'，前端渲染时单独处理
+        await API.create('profile', {
+          author_key: 'middle',
+          text_content: ta.value
+        });
+        host.textContent = ta.value;
+        form.remove();
+      } catch (e) { alert('保存失败：' + e.message); save.disabled = false; save.textContent = '保存'; }
+    });
+
+    form.append(
+      el('label', { class: 'if-row' }, [el('span', {}, '中间文字'), ta]),
+      el('div', { class: 'if-actions' }, [save, cancel])
+    );
+  }
+
+  host.appendChild(form);
 }
 
 // ============================================================

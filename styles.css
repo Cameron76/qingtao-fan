@@ -626,3 +626,17 @@ body.editing .item-ctrl { display: flex; }
 
 /* 隐藏 file input 在某些场景下用按钮触发 */
 .if-file { display: block; }
+
+.if-textarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+}
+
+.profile-form { min-width: 280px; }
