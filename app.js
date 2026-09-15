@@ -100,6 +100,7 @@ function placeholderBg(seed = 0) {
 // ============================================================
 //  渲染：作品
 // ============================================================
+let _worksFilterBound = false;
 async function renderWorks() {
   const left  = document.getElementById('worksColLeft');
   const right = document.getElementById('worksColRight');
@@ -127,6 +128,50 @@ async function renderWorks() {
     addItemControls(card, w, 'works');
     (w.author === 'qing' ? right : left).appendChild(card);
   });
+
+  bindWorksFilter();
+}
+
+// 左右菜单独立筛选：点击同一作者下的某项 → 仅过滤该作者作品；不互相影响
+function bindWorksFilter() {
+  const taoMenu  = document.querySelector('.glass-menu[data-author="tao"]');
+  const qingMenu = document.querySelector('.glass-menu[data-author="qing"]');
+  if (!taoMenu || !qingMenu) return;
+
+  const getActive = (menu) => {
+    const a = menu.querySelector('.glass-menu-item.active');
+    return a ? a.dataset.cat : null;
+  };
+  const apply = () => {
+    const tCat = getActive(taoMenu);
+    const qCat = getActive(qingMenu);
+    document.querySelectorAll('#worksColLeft .work-card, #worksColRight .work-card')
+      .forEach(card => {
+        const author = card.dataset.author;
+        const cat    = card.dataset.cat;
+        let show = true;
+        if (author === 'tao'  && tCat) show = cat === tCat;
+        if (author === 'qing' && qCat) show = cat === qCat;
+        card.style.display = show ? '' : 'none';
+      });
+  };
+  const toggle = (menu) => (e) => {
+    const item = e.target.closest('.glass-menu-item');
+    if (!item) return;
+    const wasActive = item.classList.contains('active');
+    menu.querySelectorAll('.glass-menu-item').forEach(i => i.classList.remove('active'));
+    if (!wasActive) item.classList.add('active');
+    apply();
+  };
+  // 防止重复绑定
+  if (!taoMenu._bound) {
+    taoMenu.addEventListener('click', toggle(taoMenu));
+    taoMenu._bound = true;
+  }
+  if (!qingMenu._bound) {
+    qingMenu.addEventListener('click', toggle(qingMenu));
+    qingMenu._bound = true;
+  }
 }
 function catLabel(c) {
   return ({ host: '主持', produce: '制作', judge: '评委', music: '音乐' })[c] || c;
