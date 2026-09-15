@@ -396,7 +396,7 @@ const FORM_FIELDS = {
   works:   [['author', '作者 tao|qing'], ['cat', '分类 host|produce|judge|music'], ['year', '年份'], ['title', '标题'], ['cover_url', '封面 URL']],
   story:   [['image_url', '图片 URL（必填）'], ['title', '标题']],
   video:   [['title', '标题'], ['duration', '时长 04:32'], ['year', '年份'], ['thumb_url', '缩略图 URL'], ['video_url', '视频 URL']],
-  update:  [['date', '日期 2025 · 09 · 01'], ['content', '内容']]
+  update:  [['date', '日期', '2025 · 09 · 01'], ['content', '内容', '']]
 };
 
 function addItemControls(card, record, kind) {
@@ -413,7 +413,7 @@ function openForm(card, record, kind, isNew = false) {
 
   const form = el('div', { class: 'inline-form' });
   const fields = FORM_FIELDS[kind];
-  fields.forEach(([k, label]) => {
+  fields.forEach(([k, label, ph]) => {
     const v = record ? (record[k] || '') : '';
     if (k.endsWith('_url')) {
       const wrap = el('label', { class: 'if-row' });
@@ -436,12 +436,12 @@ function openForm(card, record, kind, isNew = false) {
     } else if (k === 'content') {
       form.append(el('label', { class: 'if-row' }, [
         el('span', {}, label),
-        el('textarea', { rows: 4, value: v })
+        el('textarea', { rows: 4, value: v, placeholder: ph || '' })
       ]));
     } else {
       form.append(el('label', { class: 'if-row' }, [
         el('span', {}, label),
-        el('input', { type: 'text', value: v })
+        el('input', { type: 'text', value: v, placeholder: ph || '' })
       ]));
     }
   });

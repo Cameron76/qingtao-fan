@@ -21,14 +21,14 @@ export async function GET() {
 export async function POST(request) {
   const body = await readJson(request);
   if (!body) return fail('请求体不是合法 JSON');
-  const { date, title, content } = body;
-  if (!date || !title) return fail('缺少必填字段 (date / title)');
+  const { date, content } = body;
+  if (!date) return fail('缺少必填字段 (date)');
   try {
     await ensureSchema();
     const db = getDB();
     const r = await db.execute({
-      sql: `INSERT INTO updates (${COLS.join(', ')}) VALUES (?, ?, ?)`,
-      args: [date, title, content || '']
+      sql: `INSERT INTO updates (date, title, content) VALUES (?, '', ?)`,
+      args: [date, content || '']
     });
     return ok({ id: Number(r.lastInsertRowid) });
   } catch (e) { return fail(e.message, 500); }
@@ -41,8 +41,8 @@ export async function PUT(request) {
   try {
     const db = getDB();
     await db.execute({
-      sql: 'UPDATE updates SET date = ?, title = ?, content = ? WHERE id = ?',
-      args: [date || '', title || '', content || '', Number(body.id)]
+      sql: 'UPDATE updates SET date = ?, title = "", content = ? WHERE id = ?',
+      args: [date || '', content || '', Number(body.id)]
     });
     return ok({ id: Number(body.id) });
   } catch (e) { return fail(e.message, 500); }
