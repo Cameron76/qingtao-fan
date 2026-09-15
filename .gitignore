@@ -30,3 +30,5 @@ default.profraw
 
 # ========== 静态资源（按需调整） ==========
 # public/uploads/
+.vercel
+.env*
