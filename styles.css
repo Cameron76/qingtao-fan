@@ -245,12 +245,12 @@ body {
 }
 .profile-tag b { font-weight: 300; }
 .tag-light {
-  background: var(--jade);
-  color: #FFFFFF;
-}
-.tag-dark {
   background: #FFFFFF;
   color: var(--jade);
+}
+.tag-dark {
+  background: var(--jade);
+  color: #FFFFFF;
 }
 
 /* 中间可写小字 */
