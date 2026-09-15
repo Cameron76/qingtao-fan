@@ -436,7 +436,7 @@ function openForm(card, record, kind, isNew = false) {
     } else if (k === 'content') {
       form.append(el('label', { class: 'if-row' }, [
         el('span', {}, label),
-        el('textarea', { rows: 4, value: v, placeholder: ph || '' })
+        el('textarea', { rows: 4, placeholder: ph || '' }, v)
       ]));
     } else {
       form.append(el('label', { class: 'if-row' }, [
