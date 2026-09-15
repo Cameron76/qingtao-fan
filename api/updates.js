@@ -27,8 +27,8 @@ export async function POST(request) {
     await ensureSchema();
     const db = getDB();
     const r = await db.execute({
-      sql: `INSERT INTO updates (date, title, content) VALUES (?, '', ?)`,
-      args: [date, content || '']
+      sql: 'INSERT INTO updates (date, title, content) VALUES (?, ?, ?)',
+      args: [date, '', content || '']
     });
     return ok({ id: Number(r.lastInsertRowid) });
   } catch (e) { return fail(e.message, 500); }
@@ -41,8 +41,8 @@ export async function PUT(request) {
   try {
     const db = getDB();
     await db.execute({
-      sql: 'UPDATE updates SET date = ?, title = "", content = ? WHERE id = ?',
-      args: [date || '', content || '', Number(body.id)]
+      sql: 'UPDATE updates SET date = ?, title = ?, content = ? WHERE id = ?',
+      args: [date || '', '', content || '', Number(body.id)]
     });
     return ok({ id: Number(body.id) });
   } catch (e) { return fail(e.message, 500); }
