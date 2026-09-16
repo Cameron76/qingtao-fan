@@ -445,30 +445,46 @@ body.edit-mode .page#works .list-row { outline: 1px dashed rgba(255,255,255,0.3)
 .works-list,
 .culture-list { transition: opacity 0.4s ease, transform 0.4s ease; }
 
-/* ---------- CULTURE ---------- */
-/* ---------- CULTURE（mschristensen 风格 · 黑底全宽卡片） ---------- */
+/* ---------- CULTURE（mschristensen 风格 · 黑底档案式列表） ---------- */
 .culture-list {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 .culture-card {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 48px 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 32px;
+  align-items: baseline;
+  padding: 44px 0;
   border-top: 1px solid rgba(255,255,255,0.12);
   cursor: pointer;
   opacity: 0;
   transform: translateY(30px);
-  animation: cultureFadeUp 0.8s cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
-  transition: opacity 0.3s ease;
+  animation: cultureFadeUp 0.9s cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+  transition: opacity 0.4s ease;
 }
 .culture-card:last-child { border-bottom: 1px solid rgba(255,255,255,0.12); }
 @keyframes cultureFadeUp {
   to { opacity: 1; transform: translateY(0); }
 }
-.culture-card:hover { opacity: 0.85; }
+.culture-index {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.4);
+  align-self: start;
+  padding-top: 14px;
+  transition: color 0.4s ease;
+}
+.culture-card:hover .culture-index { color: rgba(255,255,255,0.8); }
+.culture-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
 .culture-meta-row {
   display: flex;
   align-items: baseline;
@@ -480,48 +496,50 @@ body.edit-mode .page#works .list-row { outline: 1px dashed rgba(255,255,255,0.3)
   font-size: 11px; letter-spacing: 4px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.5);
-  padding: 4px 12px;
+  padding: 3px 10px;
   border: 1px solid rgba(255,255,255,0.3);
 }
-.culture-author {
+.culture-author,
+.culture-year {
   font-family: "Cormorant Garamond", serif;
   font-size: 13px; letter-spacing: 3px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
   text-transform: uppercase;
 }
 .culture-title {
   font-family: "Noto Serif SC", "Cormorant Garamond", serif;
-  font-size: clamp(32px, 5vw, 64px);
+  font-size: clamp(28px, 4.5vw, 56px);
   font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: 3px;
+  line-height: 1.1;
+  letter-spacing: 2px;
   color: #fff;
   margin: 0;
-  transition: transform 0.5s cubic-bezier(0.2, 0.85, 0.25, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1),
+              color 0.4s ease;
 }
-.culture-card:hover .culture-title { transform: translateX(8px); }
-.culture-desc {
-  font-family: "Cormorant Garamond", "Noto Sans SC", serif;
-  font-size: 15px;
-  line-height: 1.8;
-  color: rgba(255,255,255,0.7);
-  max-width: 720px;
-  margin: 0;
+.culture-card:hover .culture-title { transform: translateX(14px); }
+/* hover 浮现的图片预览 */
+.culture-hover-img {
+  position: absolute;
+  top: 50%;
+  right: 6%;
+  width: 300px;
+  height: 190px;
+  background: #111 center/cover no-repeat;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.94) rotate(-2deg);
+  transition: opacity 0.5s cubic-bezier(0.2, 0.85, 0.25, 1),
+              transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1);
+  pointer-events: none;
+  z-index: 2;
 }
-.culture-cover {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #111;
-  background-size: cover;
-  background-position: center;
-  margin-top: 8px;
-  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1);
+.culture-card:hover .culture-hover-img {
+  opacity: 1;
+  transform: translateY(-50%) scale(1) rotate(0deg);
 }
-.culture-card:hover .culture-cover { transform: scale(1.01); }
-.culture-desc {
-  font-size: 13px; line-height: 1.7;
-  color: rgba(255,255,255,0.85);
-  margin: 0 18px 16px;
+@media (max-width: 768px) {
+  .culture-card { grid-template-columns: 40px 1fr; gap: 18px; padding: 32px 0; }
+  .culture-hover-img { width: 180px; height: 120px; right: 4%; }
 }
 
 /* ---------- NEWS ---------- */

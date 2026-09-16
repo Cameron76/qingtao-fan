@@ -454,13 +454,21 @@ function cultureTypeLabel(t) {
   return ({ interview: 'Interview', book: 'Book', script: 'Script' })[t] || t;
 }
 
-function buildCultureCard(c) {
+function buildCultureCard(c, index) {
   const card = document.createElement('article');
   card.className = 'culture-card';
   card.dataset.id = c.id;
   card.dataset.type = c.type || '';
 
-  // meta row: type tag + author
+  // 编号
+  const idx = document.createElement('span');
+  idx.className = 'culture-index';
+  idx.textContent = String(index).padStart(2, '0');
+
+  // 主体：meta + title
+  const body = document.createElement('div');
+  body.className = 'culture-body';
+
   const meta = document.createElement('div');
   meta.className = 'culture-meta-row';
   if (c.type) {
@@ -475,21 +483,23 @@ function buildCultureCard(c) {
     au.textContent = c.author;
     meta.appendChild(au);
   }
+  if (c.year) {
+    const yr = document.createElement('span');
+    yr.className = 'culture-year';
+    yr.textContent = String(c.year);
+    meta.appendChild(yr);
+  }
 
-  // title
   const title = document.createElement('h3');
   title.className = 'culture-title';
   title.textContent = c.title || '';
 
-  // description
-  const desc = document.createElement('p');
-  desc.className = 'culture-desc';
-  desc.textContent = c.description || '';
+  body.append(meta, title);
 
-  // cover
-  const cover = document.createElement('div');
-  cover.className = 'culture-cover';
-  if (c.image_url) cover.style.backgroundImage = `url(${esc(c.image_url)})`;
+  // hover 浮现的图片预览
+  const hoverImg = document.createElement('div');
+  hoverImg.className = 'culture-hover-img';
+  if (c.image_url) hoverImg.style.backgroundImage = `url(${esc(c.image_url)})`;
 
   // edit / delete
   const acts = makeItemActions({
@@ -501,15 +511,12 @@ function buildCultureCard(c) {
     }
   });
 
-  card.append(meta, title, desc, cover, acts);
+  card.append(idx, body, hoverImg, acts);
 
-  // click → open link
-  if (c.link_url) {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', (e) => {
-      window.open(c.link_url, '_blank', 'noopener,noreferrer');
-    });
-  }
+  // click → 内部详情页
+  card.addEventListener('click', () => {
+    location.hash = `#culture/${c.id}`;
+  });
   return card;
 }
 
@@ -520,8 +527,8 @@ function applyCultureFilter() {
   const filtered = cultureAll.filter(c => currentType === 'all' || c.type === currentType);
   filtered.sort((a, b) => (b.year || 0) - (a.year || 0) || (b.id - a.id));
   filtered.forEach((c, i) => {
-    const card = buildCultureCard(c);
-    card.style.animationDelay = `${i * 0.06}s`;
+    const card = buildCultureCard(c, i + 1);
+    card.style.animationDelay = `${i * 0.08}s`;
     box.appendChild(card);
   });
 }
