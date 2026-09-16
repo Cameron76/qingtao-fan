@@ -89,7 +89,7 @@ const pages  = $$('.page');
 const snapEl = $('#snap');
 
 function switchPage(name) {
-  tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name || (name === 'cultureDetail' && t.dataset.tab === 'culture')));
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   pages.forEach(p => p.classList.toggle('active', p.id === name));
 
   // 回到顶部
@@ -116,27 +116,27 @@ function switchPage(name) {
   }
 }
 
-// tab 点击：交给 hashchange
-const validTabs = new Set(tabs.map(t => t.dataset.tab));
+// tab 点击
 tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const name = tab.dataset.tab;
-    if (location.hash === '#' + name) handleCultureHash();
+  tab.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchPage(tab.dataset.tab);
   });
 });
 
-// home 内 panel 点击
-$('.page-home .panel').forEach(panel => {
-  panel.addEventListener('click', () => {
+// home 内 panel 点击（非 hero：必须有 data-tab 才生效）
+$$('.page-home .panel').forEach(panel => {
+  panel.addEventListener('click', (e) => {
+    e.preventDefault();
     const tab = panel.dataset.tab;
-    if (!tab) return;
-    if (location.hash === '#' + tab) handleCultureHash();
+    if (tab) switchPage(tab);
   });
 });
 
 // 品牌点击回 home
-$('.brand').addEventListener('click', () => {
-  if (location.hash === '#home' || location.hash === '') handleCultureHash();
+$('.brand').addEventListener('click', (e) => {
+  e.preventDefault();
+  switchPage('home');
 });
 
 // ============================================================
@@ -501,13 +501,15 @@ function buildCultureCard(c) {
     }
   });
 
-  card.append(meta, title, acts);
+  card.append(meta, title, desc, cover, acts);
 
-  // 点击卡片 → 内部详情页
-  card.style.cursor = 'pointer';
-  card.addEventListener('click', (e) => {
-    location.hash = `#culture/${c.id}`;
-  });
+  // click → open link
+  if (c.link_url) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      window.open(c.link_url, '_blank', 'noopener,noreferrer');
+    });
+  }
   return card;
 }
 
@@ -842,8 +844,9 @@ function openCultureForm(row) {
         { value: 'book',      label: 'Book' },
         { value: 'script',    label: 'Script' }
       ]},
-      { name: 'description', label: '长文正文', type: 'textarea', rows: 12, placeholder: '支持换行，可用 Markdown 语法' },
-      { name: 'image_url', label: '封面图', type: 'file' }
+      { name: 'description', label: '简介', type: 'textarea', rows: 4 },
+      { name: 'image_url', label: '图片', type: 'file' },
+      { name: 'link_url', label: '超链接', type: 'text', placeholder: 'https://...（点击卡片跳转）' }
     ],
     initial: row || {},
     submitLabel: isEdit ? '保存修改' : '添加',
@@ -952,7 +955,7 @@ form?.addEventListener('submit', async e => {
 // ============================================================
 window.addEventListener('DOMContentLoaded', () => {
   // 1. 拆字符：主页 stagger=false（同时浮现），其他页 stagger=true（依次浮现）
-  $('.chars').forEach(el => {
+  $$('.chars').forEach(el => {
     const inHome = !!el.closest('.page-home');
     wrapChars(el, !inHome);
   });
@@ -960,9 +963,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // 2. 主页初始化：让 snap 上第一个 panel 的字符浮现
   if (snapEl) setActivePanel(0);
 
-  // 3. URL hash → 切到对应页（含 culture 详情）
-  handleCultureHash();
-  window.addEventListener('hashchange', handleCultureHash);
+  // 3. URL hash → 切到对应页
+  const init = (location.hash || '#home').replace('#', '');
+  if (init && document.getElementById(init)) switchPage(init);
 
   // 4. EDIT 按钮
   attachEditToggle();
@@ -976,93 +979,3 @@ window.addEventListener('DOMContentLoaded', () => {
     loadMessages()
   ]);
 });
-
-// ============================================================
-//  Culture 详情页：hash 路由 #culture/<id>
-// ============================================================
-function handleCultureHash() {
-  const hash = location.hash || '#home';
-  const m = hash.match(/^#culture\/+(\d+)$/);
-  if (m) {
-    switchPage('cultureDetail');
-    showCultureDetail(Number(m[1]));
-    return;
-  }
-  const name = hash.replace(/^#/, '');
-  if (document.getElementById(name)) switchPage(name);
-}
-
-async function showCultureDetail(id) {
-  const titleEl = $('#detailTitle');
-  const metaEl  = $('#detailMeta');
-  const coverEl = $('#detailCover');
-  const coverWrap = $('#detailCoverWrap');
-  const articleEl = $('#detailArticle');
-  if (!titleEl) return;
-
-  titleEl.textContent = '加载中…';
-  metaEl.innerHTML = '';
-  articleEl.innerHTML = '';
-  coverWrap.style.display = 'none';
-
-  let c = null;
-  try {
-    const r = await fetch(`/api/culture?id=${id}`);
-    const j = await r.json();
-    c = j && j.data;
-  } catch (e) { console.warn(e); }
-
-  if (!c) {
-    titleEl.textContent = '未找到该条目';
-    return;
-  }
-
-  titleEl.textContent = c.title || '';
-
-  const metaParts = [];
-  if (c.type)    metaParts.push(`<span>${cultureTypeLabel(c.type)}</span>`);
-  if (c.author)   metaParts.push(`<span>by ${esc(c.author)}</span>`);
-  if (c.year)     metaParts.push(`<span>${esc(String(c.year))}</span>`);
-  metaEl.innerHTML = metaParts.join('');
-
-  if (c.image_url) {
-    coverEl.style.backgroundImage = `url(${esc(c.image_url)})`;
-    coverWrap.style.display = 'block';
-  }
-
-  articleEl.innerHTML = renderMarkdown(c.description || '');
-}
-
-// 返回按钮
-document.addEventListener('click', (e) => {
-  if (e.target.closest('#cultureBack')) {
-    location.hash = '#culture';
-  }
-});
-
-// 轻量 Markdown 渲染器
-function renderMarkdown(text) {
-  if (!text) return '';
-  let html = esc(text);
-  // 图片 ![alt](url)
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" />');
-  // 链接 [text](url)
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  // 标题
-  html = html.replace(/^###### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^##### (.+)$/gm,  '<h3>$1</h3>');
-  html = html.replace(/^#### (.+)$/gm,   '<h3>$1</h3>');
-  html = html.replace(/^### (.+)$/gm,    '<h2>$1</h2>');
-  html = html.replace(/^## (.+)$/gm,     '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm,      '<h1>$1</h1>');
-  // 加粗 / 斜体
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*([^*]+)\*/g,     '<em>$1</em>');
-  // 无序列表：连续的 - 项
-  html = html.replace(/(^- .+(?:\n- .+)*)/gm, m => '<ul>' + m.replace(/^- (.+)$/gm, '<li>$1</li>') + '</ul>');
-  // 段落：连续空行分段
-  html = html.split(/\n{2,}/).map(p =>
-    /^<(h1|h2|h3|ul|ol|li|img|blockquote)/.test(p.trim()) ? p : `<p>${p.replace(/\n/g, '<br>')}</p>`
-  ).join('\n');
-  return html;
-}

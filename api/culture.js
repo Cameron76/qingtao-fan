@@ -6,7 +6,7 @@
 import { getDB, ensureSchema } from '../lib/db.js';
 import { ok, fail, readJson } from './_helpers.js';
 
-const COLS = ['title', 'author', 'year', 'image_url', 'description', 'type'];
+const COLS = ['title', 'author', 'year', 'image_url', 'description', 'type', 'link_url'];
 
 async function ensureTable() {
   const db = getDB();
@@ -18,20 +18,16 @@ async function ensureTable() {
     image_url TEXT,
     description TEXT,
     type TEXT,                                   -- interview / book / script
+    link_url TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   )`);
 }
 
-export async function GET(request) {
+export async function GET() {
   try {
     await ensureSchema();
     await ensureTable();
     const db = getDB();
-    const id = new URL(request.url).searchParams.get('id');
-    if (id) {
-      const r = await db.execute({ sql: 'SELECT * FROM culture WHERE id = ?', args: [Number(id)] });
-      return ok(r.rows[0] || null);
-    }
     const r = await db.execute('SELECT * FROM culture ORDER BY year DESC, id DESC');
     return ok(r.rows);
   } catch (e) { return fail(e.message, 500); }
@@ -46,14 +42,15 @@ export async function POST(request) {
     await ensureTable();
     const db = getDB();
     const r = await db.execute({
-      sql: `INSERT INTO culture (${COLS.join(', ')}) VALUES (?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO culture (${COLS.join(', ')}) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       args: [
         body.title,
         body.author || null,
         body.year ? Number(body.year) : null,
         body.image_url || null,
         body.description || '',
-        body.type || null
+        body.type || null,
+        body.link_url || null
       ]
     });
     return ok({ id: Number(r.lastInsertRowid) });
