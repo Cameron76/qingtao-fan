@@ -254,11 +254,6 @@ function buildWorkCard(w) {
     tags.appendChild(chip);
   });
 
-  // 封面
-  const cover = document.createElement('div');
-  cover.className = 'work-cover';
-  if (w.cover_url) cover.style.backgroundImage = `url(${esc(w.cover_url)})`;
-
   // 编辑 / 删除
   const acts = makeItemActions({
     onEdit: () => openWorksForm(w),
@@ -269,7 +264,7 @@ function buildWorkCard(w) {
     }
   });
 
-  card.append(cat, title, tags, cover, acts);
+  card.append(cat, title, tags, acts);
 
   // 有链接时整卡可点击跳转
   if (w.link_url) {
@@ -352,38 +347,26 @@ function makeItemActions({ onEdit, onDelete }) {
 }
 
 function applyFilter() {
-  const g = $('#worksGrid');
   const l = $('#worksList');
-  if (!g || !l) return;
-  g.innerHTML = '';
+  if (!l) return;
   l.innerHTML = '';
   const filtered = worksAll.filter(w => currentCat === 'all' || w.cat === currentCat);
-  // 统一按年份 DESC，再按 id DESC
   filtered.sort((a, b) => (b.year || 0) - (a.year || 0) || (b.id - a.id));
   filtered.forEach((w, i) => {
-    const card = buildWorkCard(w);
-    card.style.animationDelay = `${i * 0.05}s`;
-    g.appendChild(card);
-
     const row = buildListRow(w);
     row.style.animationDelay = `${i * 0.04}s`;
     l.appendChild(row);
   });
-  // list 默认隐藏
-  l.style.display = 'none';
-  // grid 默认显示
-  g.style.display = 'flex';
+  l.style.display = 'block';
 }
 
 async function renderWorks() {
-  const grid = $('#worksGrid');
   const list = $('#worksList');
-  if (!grid || !list) return;
+  if (!list) return;
   try { worksAll = await API.list('works'); } catch (e) { console.warn(e); return; }
   applyFilter();
   bindFilterChips();
-  bindViewToggle();
-  addPlusButton(grid, () => openWorksForm(null));
+  addPlusButton(list, () => openWorksForm(null));
 }
 
 function bindFilterChips() {
@@ -396,46 +379,15 @@ function bindFilterChips() {
     nav.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
     currentCat = chip.dataset.cat || 'all';
-    // 切换时给 grid/list 重启动画
-    const g = $('#worksGrid');
+    // 切换时给 list 重启动画
     const l = $('#worksList');
-    [g, l].forEach(el => {
-      if (!el) return;
-      el.classList.add('is-leaving');
+    if (l) {
+      l.classList.add('is-leaving');
       setTimeout(() => {
         applyFilter();
-        el.classList.remove('is-leaving');
+        l.classList.remove('is-leaving');
       }, 200);
-    });
-  });
-}
-
-function bindViewToggle() {
-  const wrap = $('#viewToggle');
-  if (!wrap || wrap.dataset.bound === '1') return;
-  wrap.dataset.bound = '1';
-  wrap.addEventListener('click', (e) => {
-    const btn = e.target.closest('.vt-btn');
-    if (!btn) return;
-    wrap.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const view = btn.dataset.view;
-    if (view === currentView) return;
-    const fromEl = currentView === 'grid' ? $('#worksGrid') : $('#worksList');
-    const toEl   = view       === 'grid' ? $('#worksGrid') : $('#worksList');
-    currentView = view;
-
-    // 渐隐 → 切换 display → 渐显
-    fromEl.classList.add('is-leaving');
-    setTimeout(() => {
-      fromEl.style.display = 'none';
-      fromEl.classList.remove('is-leaving');
-      toEl.classList.add('is-entering');
-      toEl.style.display = view === 'grid' ? 'flex' : 'flex';
-      // 强制 reflow 再去掉 is-entering 让 transition 触发
-      void toEl.offsetWidth;
-      toEl.classList.remove('is-entering');
-    }, 220);
+    }
   });
 }
 
@@ -855,7 +807,7 @@ function openWorksForm(row) {
       ]},
       { name: 'title', label: '标题' },
       { name: 'year', label: '年份', type: 'number', placeholder: '如 2018' },
-      { name: 'cover_url', label: '封面图', type: 'file' },
+      { name: 'link_url', label: '超链接', type: 'url' }
       { name: 'link_url', label: '超链接', type: 'text', placeholder: 'https://...（点击作品跳转）' }
     ],
     initial: row || {},
