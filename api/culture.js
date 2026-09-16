@@ -23,11 +23,16 @@ async function ensureTable() {
   )`);
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
     await ensureSchema();
     await ensureTable();
     const db = getDB();
+    const id = new URL(request.url).searchParams.get('id');
+    if (id) {
+      const r = await db.execute({ sql: 'SELECT * FROM culture WHERE id = ?', args: [Number(id)] });
+      return ok(r.rows[0] || null);
+    }
     const r = await db.execute('SELECT * FROM culture ORDER BY year DESC, id DESC');
     return ok(r.rows);
   } catch (e) { return fail(e.message, 500); }

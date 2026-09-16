@@ -843,7 +843,7 @@ function openCultureForm(row) {
         { value: 'book',      label: 'Book' },
         { value: 'script',    label: 'Script' }
       ]},
-      { name: 'description', label: '简介', type: 'textarea', rows: 4 },
+      { name: 'description', label: '长文正文（支持 Markdown：# 标题、**加粗**、*斜体*、[链接](url)、![图片](url)、- 列表、> 引用）', type: 'textarea', rows: 12 },
       { name: 'image_url', label: '图片', type: 'file' }
     ],
     initial: row || {},
@@ -961,9 +961,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // 2. 主页初始化：让 snap 上第一个 panel 的字符浮现
   if (snapEl) setActivePanel(0);
 
-  // 3. URL hash → 切到对应页
-  const init = (location.hash || '#home').replace('#', '');
-  if (init && document.getElementById(init)) switchPage(init);
+  // 3. URL hash → 切到对应页（含 culture 详情）
+  handleCultureHash();
+  window.addEventListener('hashchange', handleCultureHash);
 
   // 4. EDIT 按钮
   attachEditToggle();
@@ -977,3 +977,99 @@ window.addEventListener('DOMContentLoaded', () => {
     loadMessages()
   ]);
 });
+
+// ============================================================
+//  Culture 详情页（lokasasmita 风格）
+// ============================================================
+function handleCultureHash() {
+  const hash = location.hash || '#home';
+  const m = hash.match(/^#culture\/(\d+)$/);
+  if (m) {
+    switchPage('cultureDetail');
+    showCultureDetail(Number(m[1]));
+    return;
+  }
+  const name = hash.replace(/^#/, '');
+  if (document.getElementById(name)) switchPage(name);
+}
+
+async function showCultureDetail(id) {
+  const titleEl = $('#detailTitle');
+  const metaEl  = $('#detailMeta');
+  const introEl = $('#detailIntro');
+  const articleEl = $('#detailArticle');
+  if (!titleEl) return;
+
+  titleEl.textContent = '加载中…';
+  metaEl.innerHTML = '';
+  introEl.textContent = '';
+  articleEl.innerHTML = '';
+
+  let c = null;
+  try {
+    const r = await fetch(`/api/culture?id=${id}`);
+    const j = await r.json();
+    c = j && j.data;
+  } catch (e) { console.warn(e); }
+
+  if (!c) {
+    titleEl.textContent = '未找到该条目';
+    return;
+  }
+
+  titleEl.textContent = c.title || '';
+
+  const metaParts = [];
+  if (c.type)    metaParts.push(`<span>${cultureTypeLabel(c.type)}</span>`);
+  if (c.author)   metaParts.push(`<span>by ${esc(c.author)}</span>`);
+  if (c.year)     metaParts.push(`<span>${esc(String(c.year))}</span>`);
+  metaEl.innerHTML = metaParts.join('');
+
+  // 简介：取 description 第一段作为 ABOUT intro
+  const desc = (c.description || '').trim();
+  const firstPara = desc.split(/\n\n|\n/)[0] || '';
+  introEl.textContent = firstPara;
+
+  // 长文：Markdown 渲染
+  articleEl.innerHTML = renderMarkdown(desc);
+}
+
+// 返回按钮
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#cultureBack')) {
+    location.hash = '#culture';
+  }
+});
+
+// 轻量 Markdown 渲染器
+function renderMarkdown(text) {
+  if (!text) return '';
+  let html = esc(text);
+  // 图片 ![alt](url)
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" />');
+  // 链接 [text](url)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  // 标题
+  html = html.replace(/^###### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^##### (.+)$/gm,  '<h3>$1</h3>');
+  html = html.replace(/^#### (.+)$/gm,   '<h3>$1</h3>');
+  html = html.replace(/^### (.+)$/gm,    '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm,     '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm,      '<h1>$1</h1>');
+  // 加粗 / 斜体
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g,     '<em>$1</em>');
+  // 水平线
+  html = html.replace(/^---+$/gm, '<hr />');
+  // 引用块 > 
+  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+  // 无序列表
+  html = html.replace(/(^- .+(?:\n- .+)*)/gm, m => '<ul>' + m.replace(/^- (.+)$/gm, '<li>$1</li>') + '</ul>');
+  // 有序列表
+  html = html.replace(/(^\d+\. .+(?:\n\d+\. .+)*)/gm, m => '<ol>' + m.replace(/^\d+\. (.+)$/gm, '<li>$1</li>') + '</ol>');
+  // 段落：连续空行分段
+  html = html.split(/\n{2,}/).map(p =>
+    /^<(h1|h2|h3|ul|ol|li|img|blockquote|hr)/.test(p.trim()) ? p : `<p>${p.replace(/\n/g, '<br>')}</p>`
+  ).join('\n');
+  return html;
+}
