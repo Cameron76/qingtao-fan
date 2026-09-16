@@ -445,102 +445,72 @@ body.edit-mode .page#works .list-row { outline: 1px dashed rgba(255,255,255,0.3)
 .works-list,
 .culture-list { transition: opacity 0.4s ease, transform 0.4s ease; }
 
-/* ---------- CULTURE（mschristensen 风格 · 黑底档案式列表） ---------- */
+/* ---------- CULTURE（mschristensen / published 风格 · 多列卡片网格） ---------- */
 .culture-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
 }
 .culture-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 60px 1fr;
-  gap: 32px;
-  align-items: baseline;
-  padding: 44px 0;
-  border-top: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  border-top: none;
   cursor: pointer;
   opacity: 0;
   transform: translateY(30px);
   animation: cultureFadeUp 0.9s cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
   transition: opacity 0.4s ease;
 }
-.culture-card:last-child { border-bottom: 1px solid rgba(255,255,255,0.12); }
+.culture-card:last-child { border-bottom: none; }
 @keyframes cultureFadeUp {
   to { opacity: 1; transform: translateY(0); }
 }
-.culture-index {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: rgba(255,255,255,0.4);
-  align-self: start;
-  padding-top: 14px;
-  transition: color 0.4s ease;
+.culture-cover {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #111 center/cover no-repeat;
+  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1),
+              opacity 0.4s ease;
 }
-.culture-card:hover .culture-index { color: rgba(255,255,255,0.8); }
-.culture-body {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-width: 0;
-}
+.culture-card:hover .culture-cover { transform: scale(1.02); opacity: 0.92; }
 .culture-meta-row {
   display: flex;
   align-items: baseline;
-  gap: 16px;
+  gap: 10px;
   flex-wrap: wrap;
+  margin-top: 4px;
 }
 .culture-type-tag {
   font-family: "Cormorant Garamond", serif;
-  font-size: 11px; letter-spacing: 4px;
+  font-size: 10px; letter-spacing: 3px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.5);
-  padding: 3px 10px;
+  padding: 2px 8px;
   border: 1px solid rgba(255,255,255,0.3);
 }
 .culture-author,
 .culture-year {
   font-family: "Cormorant Garamond", serif;
-  font-size: 13px; letter-spacing: 3px;
+  font-size: 11px; letter-spacing: 2px;
   color: rgba(255,255,255,0.55);
   text-transform: uppercase;
 }
 .culture-title {
   font-family: "Noto Serif SC", "Cormorant Garamond", serif;
-  font-size: clamp(28px, 4.5vw, 56px);
+  font-size: clamp(16px, 1.4vw, 22px);
   font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: 2px;
+  line-height: 1.3;
+  letter-spacing: 1px;
   color: #fff;
   margin: 0;
-  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1),
-              color 0.4s ease;
+  transition: transform 0.5s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
-.culture-card:hover .culture-title { transform: translateX(14px); }
-/* hover 浮现的图片预览 */
-.culture-hover-img {
-  position: absolute;
-  top: 50%;
-  right: 6%;
-  width: 300px;
-  height: 190px;
-  background: #111 center/cover no-repeat;
-  opacity: 0;
-  transform: translateY(-50%) scale(0.94) rotate(-2deg);
-  transition: opacity 0.5s cubic-bezier(0.2, 0.85, 0.25, 1),
-              transform 0.6s cubic-bezier(0.2, 0.85, 0.25, 1);
-  pointer-events: none;
-  z-index: 2;
-}
-.culture-card:hover .culture-hover-img {
-  opacity: 1;
-  transform: translateY(-50%) scale(1) rotate(0deg);
-}
-@media (max-width: 768px) {
-  .culture-card { grid-template-columns: 40px 1fr; gap: 18px; padding: 32px 0; }
-  .culture-hover-img { width: 180px; height: 120px; right: 4%; }
-}
+.culture-card:hover .culture-title { transform: translateX(6px); }
+@media (max-width: 1024px) { .culture-list { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .culture-list { grid-template-columns: 1fr; } }
 
 /* ---------- NEWS ---------- */
 .timeline {

@@ -460,15 +460,12 @@ function buildCultureCard(c, index) {
   card.dataset.id = c.id;
   card.dataset.type = c.type || '';
 
-  // 编号
-  const idx = document.createElement('span');
-  idx.className = 'culture-index';
-  idx.textContent = String(index).padStart(2, '0');
+  // 封面图
+  const cover = document.createElement('div');
+  cover.className = 'culture-cover';
+  if (c.image_url) cover.style.backgroundImage = `url(${esc(c.image_url)})`;
 
-  // 主体：meta + title
-  const body = document.createElement('div');
-  body.className = 'culture-body';
-
+  // meta 行
   const meta = document.createElement('div');
   meta.className = 'culture-meta-row';
   if (c.type) {
@@ -490,18 +487,14 @@ function buildCultureCard(c, index) {
     meta.appendChild(yr);
   }
 
+  // 标题
   const title = document.createElement('h3');
   title.className = 'culture-title';
   title.textContent = c.title || '';
 
-  body.append(meta, title);
+  card.append(cover, meta, title);
 
-  // hover 浮现的图片预览
-  const hoverImg = document.createElement('div');
-  hoverImg.className = 'culture-hover-img';
-  if (c.image_url) hoverImg.style.backgroundImage = `url(${esc(c.image_url)})`;
-
-  // edit / delete
+  // edit / delete（保留不动）
   const acts = makeItemActions({
     onEdit: () => openCultureForm(c),
     onDelete: async () => {
@@ -510,10 +503,9 @@ function buildCultureCard(c, index) {
       renderCulture();
     }
   });
+  card.appendChild(acts);
 
-  card.append(idx, body, hoverImg, acts);
-
-  // click → 内部详情页
+  // click → 内部详情页（自动链接）
   card.addEventListener('click', () => {
     location.hash = `#culture/${c.id}`;
   });
@@ -852,8 +844,7 @@ function openCultureForm(row) {
         { value: 'script',    label: 'Script' }
       ]},
       { name: 'description', label: '简介', type: 'textarea', rows: 4 },
-      { name: 'image_url', label: '图片', type: 'file' },
-      { name: 'link_url', label: '超链接', type: 'text', placeholder: 'https://...（点击卡片跳转）' }
+      { name: 'image_url', label: '图片', type: 'file' }
     ],
     initial: row || {},
     submitLabel: isEdit ? '保存修改' : '添加',
