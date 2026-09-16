@@ -101,7 +101,10 @@ function switchPage(name) {
     setActivePanel(0);
   }
 
-  history.replaceState(null, '', '#' + name);
+  // cultureDetail 页不覆盖 hash（保留 #culture/id），其他页正常 replaceState
+  if (name !== 'cultureDetail') {
+    history.replaceState(null, '', '#' + name);
+  }
 
   // 非主页字符入场（force-reflow 保证 transition 完整播放）
   if (name !== 'home') {
