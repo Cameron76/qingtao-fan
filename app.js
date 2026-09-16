@@ -714,11 +714,18 @@ function buildForm({ fields, initial = {}, submitLabel = '保存', onSubmit, aft
       const el = form.querySelector(`[name="${f.name}"]`);
       if (!el) return;
       if (f.type === 'file') {
-        const file = el.files && el.files[0];
-        if (file) {
-          filePromises.push(API.upload(file).then(url => { data[f.name] = url; }));
+        const fileInp = form.querySelector(`[name="${f.name}"]`);
+        const urlInp = form.querySelector(`[name="${f.name}_url"]`);
+        const urlVal = urlInp && urlInp.value && urlInp.value.trim();
+        if (urlVal) {
+          data[f.name] = urlVal;
         } else {
-          data[f.name] = initial[f.name] || '';
+          const file = fileInp && fileInp.files && fileInp.files[0];
+          if (file) {
+            filePromises.push(API.upload(file).then(url => { data[f.name] = url; }));
+          } else {
+            data[f.name] = initial[f.name] || '';
+          }
         }
       } else if (f.type === 'textarea') {
         data[f.name] = el.value;
@@ -766,12 +773,27 @@ function buildForm({ fields, initial = {}, submitLabel = '保存', onSubmit, aft
       const prev = document.createElement('div');
       prev.className = 'image-preview';
       if (initial[f.name]) prev.style.backgroundImage = `url(${initial[f.name]})`;
+      // 文件上传输入
       const inp = document.createElement('input');
       inp.type = 'file';
       inp.accept = 'image/*';
       inp.name = f.name;
       bindImagePreview(inp, prev);
-      wrap.append(prev, inp);
+      // URL 粘贴输入
+      const urlLabel = document.createElement('div');
+      urlLabel.className = 'image-url-label';
+      urlLabel.textContent = '或粘贴图片 URL';
+      const urlInp = document.createElement('input');
+      urlInp.type = 'url';
+      urlInp.name = f.name + '_url';
+      urlInp.className = 'image-url-input';
+      urlInp.value = initial[f.name] || '';
+      urlInp.placeholder = 'https://...';
+      // URL 改变 → 同步预览
+      urlInp.addEventListener('input', () => {
+        if (urlInp.value.trim()) prev.style.backgroundImage = `url(${urlInp.value.trim()})`;
+      });
+      wrap.append(prev, inp, urlLabel, urlInp);
       row.appendChild(wrap);
     } else {
       const inp = document.createElement('input');
