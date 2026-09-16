@@ -145,6 +145,8 @@ $('.brand').addEventListener('click', (e) => {
 // ============================================================
 //  Home 内 snap-scroll 字符动画
 // ============================================================
+let firstSnapInit = true;
+
 function setActivePanel(idx) {
   if (!snapEl) return;
   const panels = Array.from(snapEl.children);
@@ -165,7 +167,6 @@ function setActivePanel(idx) {
     });
   });
 }
-let firstSnapInit = true;
 
 let snapTimer = null;
 function onSnapScroll() {
