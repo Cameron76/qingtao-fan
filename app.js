@@ -154,16 +154,18 @@ function setActivePanel(idx) {
       const hasIn = el.classList.contains('in');
       if (isActive && !hasIn) {
         el.classList.add('in');
-      } else if (isActive && hasIn) {
+      } else if (isActive && hasIn && !firstSnapInit) {
+        // 重新激活：移除 → force-reflow → 重新加上，确保 transition 完整播放
         el.classList.remove('in');
         void el.offsetWidth;
         el.classList.add('in');
-      } else {
+      } else if (!isActive) {
         el.classList.remove('in');
       }
     });
   });
 }
+let firstSnapInit = true;
 
 let snapTimer = null;
 function onSnapScroll() {
@@ -966,12 +968,21 @@ window.addEventListener('DOMContentLoaded', () => {
     wrapChars(el, !inHome);
   });
 
-  // 2. 主页初始化：让 snap 上第一个 panel 的字符浮现
-  if (snapEl) setActivePanel(0);
-
-  // 3. URL hash → 切到对应页（含 culture 详情）
+  // 2. URL hash → 切到对应页（含 culture 详情）
   handleCultureHash();
   window.addEventListener('hashchange', handleCultureHash);
+
+  // 3. 主页字体动画：用双层 RAF 保证浏览器先 paint 出无 .in 的初始帧，再加 .in 触发完整 transition
+  if (snapEl && document.getElementById('home')?.classList.contains('active')) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setActivePanel(0);
+        firstSnapInit = false;
+      });
+    });
+  } else {
+    firstSnapInit = false;
+  }
 
   // 4. EDIT 按钮
   attachEditToggle();
