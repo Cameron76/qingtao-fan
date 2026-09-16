@@ -507,136 +507,45 @@ body {
   .masonry { columns: 1; }
 }
 
-/* ========== 编辑模式 ========== */
-.edit-fab {
-  position: fixed; right: 32px; bottom: 32px; z-index: 200;
-  border: 2px solid var(--jade);
-  background: var(--jade); color: #fff;
-  padding: 14px 26px; font-size: 14px; letter-spacing: 3px;
-  cursor: pointer; font-family: inherit; font-weight: 600;
-  transition: background 0.2s ease, border-color 0.2s ease;
+/* ========== CULTURE 熏陶 ========== */
+.culture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.edit-fab:hover { background: var(--jade-deep); border-color: var(--jade-deep); }
-
-.edit-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-  background: var(--jade-darker); color: #fff;
-  display: none; align-items: center; justify-content: center;
-  gap: 14px; padding: 14px 20px;
-  border-top: 2px solid var(--jade);
+.culture-card {
+  display: flex; flex-direction: column;
+  background: rgba(255,255,255,0.85);
+  border: 2px solid rgba(69,151,140,0.3);
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
-.edit-bar-label { font-size: 13px; letter-spacing: 4px; font-weight: 600; margin-right: 8px; }
-.eb-btn {
-  border: 2px solid #fff; background: transparent; color: #fff;
-  padding: 8px 22px; font-size: 13px; letter-spacing: 2px;
-  cursor: pointer; font-family: inherit; font-weight: 600;
-  transition: background 0.2s ease, color 0.2s ease;
+.culture-card:hover { border-color: var(--jade-deep); transform: translateY(-2px); }
+.culture-cover {
+  width: 100%; aspect-ratio: 4 / 3;
+  background-size: cover; background-position: center;
+  background-color: var(--cream);
 }
-.eb-btn:hover { background: #fff; color: var(--jade-darker); }
-.eb-btn.save { background: #fff; color: var(--jade-darker); }
-.eb-btn.save:hover { background: var(--cream); border-color: var(--cream); }
-.eb-btn.ghost { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.85); }
-.eb-btn.ghost:hover { background: rgba(255,255,255,0.15); color: #fff; }
-
-body.editing [data-edit] {
-  outline: 2px dashed var(--jade);
-  outline-offset: 4px;
-  cursor: text;
-  background: rgba(255,255,255,0.92);
+.culture-title {
+  font-family: "Noto Serif SC", serif;
+  font-size: 18px; font-weight: 600;
+  color: var(--jade-darker);
+  margin: 18px 22px 6px;
+  letter-spacing: 2px;
 }
-body.editing [data-edit]:hover { outline-style: solid; outline-color: var(--jade-deep); }
-body.editing [data-edit]:focus { outline: 3px solid var(--jade); background: #fff; }
-
-.edit-toast {
-  position: fixed; top: 90px; left: 50%;
-  transform: translateX(-50%) translateY(-12px);
-  z-index: 300; background: var(--jade-darker); color: #fff;
-  padding: 12px 28px; font-size: 14px; letter-spacing: 3px; font-weight: 600;
-  opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
-  border: 2px solid var(--jade);
+.culture-meta {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 13px; color: var(--jade);
+  letter-spacing: 3px;
+  margin: 0 22px 10px;
 }
-.edit-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ========== 数据驱动的卡片控制条（editing 模式可见） ========== */
-.add-row { display: none; justify-content: center; margin: 28px 0 0; }
-body.editing .add-row { display: flex; }
-.add-btn {
-  border: 2px dashed var(--jade);
-  background: rgba(255,255,255,0.7);
-  color: var(--jade-deep);
-  padding: 14px 28px; font-size: 14px; letter-spacing: 4px;
-  cursor: pointer; font-family: inherit; font-weight: 600;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-.add-btn:hover { background: var(--cream); border-color: var(--jade-deep); }
-
-.item-ctrl { display: none; position: absolute; top: 8px; right: 8px; gap: 6px; z-index: 5; }
-.work-card, .video-card, .m-item, .t-item, .profile-card { position: relative; }
-body.editing .item-ctrl { display: flex; }
-.ic-btn {
-  width: 28px; height: 28px;
-  border: 2px solid var(--jade);
-  background: rgba(255,255,255,0.95);
-  color: var(--jade-deep);
-  cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.ic-btn:hover { background: var(--jade); color: #fff; }
-.ic-btn.del:hover { background: #B0413E; border-color: #B0413E; color: #fff; }
-
-/* ========== 内联表单 ========== */
-.inline-form {
-  margin-top: 12px;
-  background: rgba(255,255,255,0.96);
-  border: 2px solid var(--jade);
-  padding: 16px;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.if-row { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--jade-deep); letter-spacing: 2px; }
-.if-row span { font-weight: 600; }
-.if-row input[type="text"],
-.if-row textarea {
-  border: 1px solid var(--border);
-  background: #fff;
-  padding: 8px 10px; font-size: 14px;
-  font-family: inherit; color: var(--ink); outline: none;
-}
-.if-row input[type="text"]:focus,
-.if-row textarea:focus { border-color: var(--jade); }
-.if-preview {
-  width: 100%; max-height: 120px; object-fit: cover;
-  border: 1px dashed var(--border);
-  background: rgba(255,255,255,0.6);
-}
-.if-file {
-  font-size: 12px; padding: 4px 0;
-}
-.if-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.if-save, .if-cancel {
-  border: 2px solid var(--jade);
-  background: var(--jade); color: #fff;
-  padding: 8px 18px; font-size: 13px; letter-spacing: 2px;
-  cursor: pointer; font-family: inherit; font-weight: 600;
-  transition: background 0.2s ease;
-}
-.if-save:hover { background: var(--jade-deep); }
-.if-cancel { background: transparent; color: var(--jade-deep); }
-.if-cancel:hover { background: rgba(69,151,140,0.1); }
-
-/* 隐藏 file input 在某些场景下用按钮触发 */
-.if-file { display: block; }
-
-.if-textarea {
-  width: 100%;
-  min-height: 140px;
-  resize: vertical;
-  font-family: inherit;
-  font-size: 14px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  background: #fff;
+.culture-desc {
+  font-size: 14px; line-height: 1.7;
   color: var(--ink);
+  margin: 0 22px 22px;
 }
-
-.profile-form { min-width: 280px; }
+@media (max-width: 640px) {
+  .culture-grid { grid-template-columns: 1fr; gap: 20px; }
+}
