@@ -108,6 +108,18 @@ html, body {
   background: #000;
 }
 .panel.hero { cursor: default; }
+.panel.hero {
+  background-size: cover !important;
+  background-position: center top !important;
+  background-repeat: no-repeat !important;
+}
+.panel.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.45) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
 .panel::after {
   content: '';
   position: absolute; inset: 0;
