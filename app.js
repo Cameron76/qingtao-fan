@@ -617,36 +617,52 @@ async function renderProfile() {
 }
 
 // ============================================================
-//  PROFILE：编辑模式 - 点击照片上传 / 中间文本可改
+//  PROFILE：编辑模式 - 点击照片粘贴 URL / 中间文本可改
 // ============================================================
 function bindProfileEditing() {
-  // 照片点击 → 触发隐藏的 file input
-  $$('.profile-photo').forEach(photo => {
+  // 照片点击 → 弹出 URL 输入对话框
+  $('.profile-photo').forEach(photo => {
     photo.innerHTML = '';
-    let fileInput = photo.querySelector('input.photo-file');
-    if (!fileInput) {
-      fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.className = 'photo-file';
-      fileInput.style.position = 'absolute';
-      fileInput.style.inset = '0';
-      fileInput.style.opacity = '0';
-      fileInput.style.cursor = 'pointer';
+    let urlInput = photo.querySelector('input.photo-url-input');
+    let urlBtn   = photo.querySelector('button.photo-url-btn');
+    let urlLabel = photo.querySelector('.photo-url-label');
+    if (!urlLabel) {
+      urlLabel = document.createElement('div');
+      urlLabel.className = 'photo-url-label';
+      urlLabel.textContent = '点击修改图片';
       photo.style.position = 'relative';
-      photo.appendChild(fileInput);
+      photo.appendChild(urlLabel);
     }
-    fileInput.addEventListener('change', async (e) => {
-      const f = e.target.files && e.target.files[0];
-      if (!f) return;
+    if (!urlInput) {
+      urlInput = document.createElement('input');
+      urlInput.type = 'url';
+      urlInput.className = 'photo-url-input';
+      urlInput.placeholder = 'https://...';
+      urlInput.style.display = 'block';
+      urlInput.style.width = '100%';
+      urlInput.style.marginBottom = '4px';
+      urlInput.value = (photo.style.backgroundImage || '').replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
+      photo.appendChild(urlInput);
+    }
+    if (!urlBtn) {
+      urlBtn = document.createElement('button');
+      urlBtn.type = 'button';
+      urlBtn.className = 'photo-url-btn';
+      urlBtn.textContent = '保存图片';
+      photo.appendChild(urlBtn);
+    }
+    urlBtn.addEventListener('click', async () => {
+      const url = (urlInput.value || '').trim();
+      if (!url) { alert('请输入图片 URL'); return; }
       const card = photo.closest('.profile-card');
       const key  = card && card.dataset.profile;
       if (!key) return;
       try {
-        const url = await API.upload(f);
         photo.style.backgroundImage = `url(${url})`;
         await API.post('profile', { author_key: key, photo_url: url, text_content: '' });
-      } catch (err) { alert('上传失败：' + err.message); }
+        urlLabel.textContent = '已保存';
+        setTimeout(() => { urlLabel.textContent = '点击修改图片'; }, 1500);
+      } catch (err) { alert('保存失败：' + err.message); }
     });
   });
 
