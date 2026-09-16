@@ -1031,3 +1031,44 @@ body.edit-mode .profile-middle .pm-toolbar { display: flex; gap: 8px; margin-bot
 @media (max-width: 900px) {
   .detail-article { padding: 40px 24px; }
 }
+
+/* 详情页编辑模式 */
+.editable {
+  outline: 1px dashed rgba(255,255,255,0.35);
+  outline-offset: 4px;
+  cursor: text;
+}
+.editable:focus {
+  outline-color: #fff;
+  background: rgba(255,255,255,0.05);
+}
+.detail-md-editor {
+  width: 100%;
+  min-height: 480px;
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(17,17,17,0.2);
+  padding: 24px;
+  font-family: "Cormorant Garamond", "Noto Sans SC", monospace;
+  font-size: 15px;
+  line-height: 1.8;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.detail-md-editor:focus {
+  outline: 2px solid #111;
+}
+.detail-save-btn {
+  display: block;
+  margin: 20px 0 0;
+  padding: 12px 28px;
+  background: #fff;
+  color: #111;
+  border: none;
+  cursor: pointer;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 13px; letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: opacity 0.3s ease;
+}
+.detail-save-btn:hover { opacity: 0.8; }

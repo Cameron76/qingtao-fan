@@ -904,6 +904,11 @@ function setEditMode(on) {
   }
   // 非 EDIT 模式时关闭正在编辑的表单
   if (!editMode) closeActiveForm();
+  // 若在 culture 详情页，重新渲染为可编辑/只读
+  if (document.getElementById('cultureDetail')?.classList.contains('active')) {
+    const m = location.hash.match(/^#culture\/(\d+)$/);
+    if (m) showCultureDetail(Number(m[1]));
+  }
 }
 
 function attachEditToggle() {
@@ -1018,6 +1023,7 @@ async function showCultureDetail(id) {
   }
 
   titleEl.textContent = c.title || '';
+  titleEl.dataset.raw = c.title || '';
 
   const metaParts = [];
   if (c.type)    metaParts.push(`<span>${cultureTypeLabel(c.type)}</span>`);
@@ -1029,9 +1035,66 @@ async function showCultureDetail(id) {
   const desc = (c.description || '').trim();
   const firstPara = desc.split(/\n\n|\n/)[0] || '';
   introEl.textContent = firstPara;
+  introEl.dataset.raw = firstPara;
 
-  // 长文：Markdown 渲染
-  articleEl.innerHTML = renderMarkdown(desc);
+  // 长文：编辑模式下用 textarea，否则 Markdown 渲染
+  if (editMode) {
+    // 标题可编辑
+    titleEl.contentEditable = 'true';
+    titleEl.classList.add('editable');
+    introEl.contentEditable = 'true';
+    introEl.classList.add('editable');
+
+    // 正文 textarea
+    articleEl.innerHTML = '';
+    const ta = document.createElement('textarea');
+    ta.className = 'detail-md-editor';
+    ta.rows = 24;
+    ta.value = c.description || '';
+    ta.placeholder = '在此输入 Markdown 长文…\n# 标题\n**加粗** *斜体*\n[链接](url)\n![图片](url)\n- 列表项\n> 引用\n---\n分隔线';
+    articleEl.appendChild(ta);
+
+    // 保存按钮
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'detail-save-btn';
+    saveBtn.textContent = '保存修改';
+    saveBtn.addEventListener('click', async () => {
+      const title = titleEl.textContent.trim();
+      const intro = introEl.textContent.trim();
+      const body  = ta.value;
+      // 简介拼回正文顶部（若用户改过 intro 且与正文首段不同）
+      let desc = body;
+      if (intro && (!desc || !desc.startsWith(intro))) {
+        desc = intro + '\n\n' + body;
+      }
+      try {
+        await API.put('culture', { id: c.id, title, description: desc });
+        // 重新渲染为只读
+        const j = await (await fetch(`/api/culture?id=${c.id}`)).json();
+        const fresh = j && j.data;
+        if (fresh) {
+          titleEl.contentEditable = 'false';
+          titleEl.classList.remove('editable');
+          introEl.contentEditable = 'false';
+          introEl.classList.remove('editable');
+          titleEl.textContent = fresh.title || '';
+          const fDesc = (fresh.description || '').trim();
+          introEl.textContent = fDesc.split(/\n\n|\n/)[0] || '';
+          articleEl.innerHTML = renderMarkdown(fDesc);
+        }
+      } catch (e) {
+        alert('保存失败：' + e.message);
+      }
+    });
+    articleEl.appendChild(saveBtn);
+  } else {
+    titleEl.contentEditable = 'false';
+    titleEl.classList.remove('editable');
+    introEl.contentEditable = 'false';
+    introEl.classList.remove('editable');
+    articleEl.innerHTML = renderMarkdown(desc);
+  }
 }
 
 // 返回按钮
