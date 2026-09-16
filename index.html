@@ -6,182 +6,171 @@
   <title>卿涛 · Qing Tao</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Noto+Serif+SC:wght@200;300;400;500;600&family=Noto+Sans+SC:wght@200;300;400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- 背景装饰 -->
-  <div class="bg-decor">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    <div class="grain"></div>
-  </div>
-
   <!-- 顶部导航 -->
-  <header class="nav-wrap" id="nav">
-    <div class="nav-inner">
-      <a href="#home" class="brand" data-tab="home">
-        <span class="brand-cn">卿涛</span>
-        <span class="brand-en">QING TAO</span>
-      </a>
-      <nav class="tabs" role="tablist">
-        <button class="tab active" data-tab="home" role="tab">HOME</button>
-        <button class="tab" data-tab="about" role="tab">PROFILE</button>
-        <button class="tab" data-tab="works" role="tab">WORKS</button>
-        <button class="tab" data-tab="culture" role="tab">CULTURE</button>
-        <button class="tab" data-tab="updates" role="tab">NEWS</button>
-        <button class="tab" data-tab="guestbook" role="tab">GUESTBOOK</button>
-      </nav>
-      <button class="menu-btn" id="menuBtn" aria-label="菜单">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+  <header class="nav" id="nav">
+    <a href="#home" class="brand" data-tab="home">
+      <span class="brand-cn">卿涛</span>
+      <span class="brand-en">QING TAO</span>
+    </a>
+    <nav class="tabs" role="tablist">
+      <a class="tab active" href="#home"      data-tab="home">HOME</a>
+      <a class="tab"        href="#profile"   data-tab="profile">PROFILE</a>
+      <a class="tab"        href="#works"     data-tab="works">WORKS</a>
+      <a class="tab"        href="#culture"   data-tab="culture">CULTURE</a>
+      <a class="tab"        href="#news"      data-tab="news">NEWS</a>
+      <a class="tab"        href="#guestbook" data-tab="guestbook">GUESTBOOK</a>
+    </nav>
   </header>
 
-  <main class="container">
-    <!-- 首页 -->
-    <section class="page active" id="home" role="tabpanel">
-      <div class="hero-text">
-        <p class="hero-en">QING TAO</p>
-        <h1 class="hero-cn">卿&nbsp;&nbsp;涛</h1>
-        <p class="hero-sub">青山在，人未老</p>
-        <div class="hero-divider"></div>
-        <p class="hero-desc">因为时世艰辛，你要等我，让我们怀着希望去生活</p>
-        <div class="hero-tags">
-          <span class="tag">主持人</span>
-          <span class="tag">制作人</span>
+  <main>
+    <!-- ============ HOME：1 hero + 5 英文 panel 的 snap-scroll 菜单 ============ -->
+    <section class="page page-home active" id="home">
+      <div class="snap" id="snap">
+        <!-- 第一页：hero（卿涛青山在人未老） -->
+        <div class="panel hero">
+          <div class="panel-inner">
+            <h2 class="title chars" data-text="卿涛青山在人未老">卿涛青山人在未老</h2>
+          </div>
+        </div>
+
+        <!-- 菜单：5 板块（仅英文，不出现中文翻译） -->
+        <a class="panel" data-tab="profile"   href="#profile">
+          <div class="panel-inner">
+            <h2 class="title chars" data-text="PROFILE">PROFILE</h2>
+          </div>
+        </a>
+        <a class="panel" data-tab="works"     href="#works">
+          <div class="panel-inner">
+            <h2 class="title chars" data-text="DISCOGRAPHY">DISCOGRAPHY</h2>
+          </div>
+        </a>
+        <a class="panel" data-tab="culture"   href="#culture">
+          <div class="panel-inner">
+            <h2 class="title chars" data-text="CULTURE">CULTURE</h2>
+          </div>
+        </a>
+        <a class="panel" data-tab="news"      href="#news">
+          <div class="panel-inner">
+            <h2 class="title chars" data-text="UPDATES">UPDATES</h2>
+          </div>
+        </a>
+        <a class="panel" data-tab="guestbook" href="#guestbook">
+          <div class="panel-inner">
+            <h2 class="title chars" data-text="GUESTBOOK">GUESTBOOK</h2>
+          </div>
+        </a>
+      </div>
+      <div class="home-foot">© 2026 · QING TAO Fan Site</div>
+    </section>
+
+    <!-- ============ PROFILE：独立可滚动页 ============ -->
+    <section class="page" id="profile">
+      <header class="page-head">
+        <p class="kicker">PROFILE</p>
+        <h2 class="page-title chars" data-text="周涛 董卿">周涛&nbsp;董卿</h2>
+        <div class="page-line"></div>
+      </header>
+      <div class="profile-row">
+        <div class="profile-card" data-profile="tao">
+          <div class="profile-photo" data-profile-photo></div>
+          <p class="profile-name">Zhou&nbsp;Tao</p>
+          <p class="profile-cn">周 涛</p>
+        </div>
+        <div class="profile-middle">
+          <p>卿本温婉</p>
+          <p>涛自从容</p>
+          <p class="middle-divider"></p>
+          <p>同台十余载</p>
+          <p>各成风骨</p>
+        </div>
+        <div class="profile-card" data-profile="qing">
+          <div class="profile-photo" data-profile-photo></div>
+          <p class="profile-name">Dong&nbsp;Qing</p>
+          <p class="profile-cn">董 卿</p>
         </div>
       </div>
     </section>
 
-    <!-- 关于 -->
-    <section class="page" id="about" role="tabpanel">
-      <div class="page-head">
-        <span class="page-en">PROFILE</span>
-        <h2 class="page-cn">关 于 卿 涛</h2>
+    <!-- ============ WORKS：独立可滚动页 ============ -->
+    <section class="page" id="works">
+      <header class="page-head">
+        <p class="kicker">DISCOGRAPHY</p>
+        <h2 class="page-title chars" data-text="作 品">作&nbsp;&nbsp;品</h2>
         <div class="page-line"></div>
+      </header>
+      <div class="works-tools">
+        <div class="works-tool" data-author="tao">
+          <span class="glyph">涛</span>
+          <ul>
+            <li data-cat="host">主持</li>
+            <li data-cat="produce">制作</li>
+            <li data-cat="judge">评委</li>
+            <li data-cat="music">音乐</li>
+          </ul>
+        </div>
+        <div class="works-tool" data-author="qing">
+          <ul>
+            <li data-cat="host">主持</li>
+            <li data-cat="produce">制作</li>
+            <li data-cat="judge">评委</li>
+            <li data-cat="music">音乐</li>
+          </ul>
+          <span class="glyph">卿</span>
+        </div>
       </div>
-      <div class="profile-grid">
-        <div class="profile-card profile-card-left" data-profile="tao">
-          <div class="profile-photo" data-profile-photo>
-            <span class="profile-photo-hint">预留图片</span>
-          </div>
-          <div class="profile-tag tag-light"><b>周&nbsp;涛</b></div>
-        </div>
-        <div class="profile-middle" data-profile="middle">
-          <p>卿本温婉，涛自从容。<br/>同台十余载，各成风骨。</p>
-        </div>
-        <div class="profile-card profile-card-right" data-profile="qing">
-          <div class="profile-photo" data-profile-photo>
-            <span class="profile-photo-hint">预留图片</span>
-          </div>
-          <div class="profile-tag tag-dark"><b>董&nbsp;卿</b></div>
-        </div>
+      <div class="works-grid">
+        <div class="works-col" id="worksColLeft"></div>
+        <div class="works-col" id="worksColRight"></div>
       </div>
     </section>
 
-    <!-- 作品 -->
-    <section class="page" id="works" role="tabpanel">
-      <div class="page-head">
-        <span class="page-en">DISCOGRAPHY</span>
-        <h2 class="page-cn">作 品 集</h2>
+    <!-- ============ CULTURE：独立可滚动页 ============ -->
+    <section class="page" id="culture">
+      <header class="page-head">
+        <p class="kicker">CULTURE</p>
+        <h2 class="page-title chars" data-text="熏陶">熏&nbsp;&nbsp;陶</h2>
         <div class="page-line"></div>
-      </div>
-      <div class="works-layout">
-        <aside class="works-side works-side-left">
-          <div class="glass-menu" data-author="tao">
-            <div class="glass-menu-glyph">涛</div>
-            <ul class="glass-menu-list">
-              <li class="glass-menu-item" data-cat="host">主持</li>
-              <li class="glass-menu-item" data-cat="produce">制作</li>
-              <li class="glass-menu-item" data-cat="judge">评委</li>
-              <li class="glass-menu-item" data-cat="music">音乐</li>
-            </ul>
-          </div>
-        </aside>
-        <div class="works-center">
-          <div class="works-grid" id="worksGrid">
-            <div class="works-col works-col-left"  id="worksColLeft"></div>
-            <div class="works-col works-col-right" id="worksColRight"></div>
-          </div>
-        </div>
-        <aside class="works-side works-side-right">
-          <div class="glass-menu glass-menu-right" data-author="qing">
-            <div class="glass-menu-glyph">卿</div>
-            <ul class="glass-menu-list glass-menu-list-right">
-              <li class="glass-menu-item" data-cat="host">主持</li>
-              <li class="glass-menu-item" data-cat="produce">制作</li>
-              <li class="glass-menu-item" data-cat="judge">评委</li>
-              <li class="glass-menu-item" data-cat="music">音乐</li>
-            </ul>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- 熏陶 -->
-    <section class="page" id="culture" role="tabpanel">
-      <div class="page-head">
-        <span class="page-en">CULTURE</span>
-        <h2 class="page-cn">熏 陶</h2>
-        <div class="page-line"></div>
-      </div>
+      </header>
       <div class="culture-grid" id="cultureGrid"></div>
     </section>
 
-    <!-- 动态 -->
-    <section class="page" id="updates" role="tabpanel">
-      <div class="page-head">
-        <span class="page-en">UPDATES</span>
-        <h2 class="page-cn">最 新 动 态</h2>
+    <!-- ============ NEWS：独立可滚动页 ============ -->
+    <section class="page" id="news">
+      <header class="page-head">
+        <p class="kicker">UPDATES</p>
+        <h2 class="page-title chars" data-text="动态">动&nbsp;&nbsp;态</h2>
         <div class="page-line"></div>
-      </div>
+      </header>
       <div class="timeline" id="updatesList"></div>
     </section>
 
-    <!-- 留言 -->
-    <section class="page" id="guestbook" role="tabpanel">
-      <div class="page-head">
-        <span class="page-en">GUESTBOOK</span>
-        <h2 class="page-cn">留 言 板</h2>
+    <!-- ============ GUESTBOOK：独立可滚动页 ============ -->
+    <section class="page" id="guestbook">
+      <header class="page-head">
+        <p class="kicker">GUESTBOOK</p>
+        <h2 class="page-title chars" data-text="留言">留&nbsp;&nbsp;言</h2>
         <div class="page-line"></div>
-      </div>
-      <div class="glass-grid">
-        <div class="glass-card">
-          <h3>写下你的话</h3>
+      </header>
+      <div class="guest-grid">
+        <div class="guest-card">
+          <h3>写一句话</h3>
           <form class="guest-form" id="guestForm">
             <input type="text" id="gbName" placeholder="昵称" required />
             <textarea id="gbMsg" rows="4" placeholder="想对卿涛说的话……" required></textarea>
-            <button type="submit" class="btn-primary">发送留言</button>
+            <button type="submit" class="btn-primary">发送</button>
           </form>
         </div>
-        <div class="glass-card">
-          <h3>粉丝留言</h3>
-          <div class="msg-list" id="msgList">
-            <div class="msg-item">
-              <b>青柠</b>
-              <p>新单曲循环了一整天，声音太治愈了！</p>
-            </div>
-            <div class="msg-item">
-              <b>山海</b>
-              <p>期待下一部作品，永远支持卿涛～</p>
-            </div>
-          </div>
+        <div class="guest-card">
+          <h3>来自粉丝</h3>
+          <div class="msg-list" id="msgList"></div>
         </div>
       </div>
     </section>
   </main>
-
-  <footer class="foot">
-    <p>© 2026 卿涛 · QING TAO · Fan Site</p>
-    <div class="socials">
-      <span>微博</span><span>·</span>
-      <span>小红书</span><span>·</span>
-      <span>抖音</span><span>·</span>
-      <span>B站</span>
-    </div>
-  </footer>
 
   <script src="app.js"></script>
 </body>

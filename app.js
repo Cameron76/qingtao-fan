@@ -1,286 +1,309 @@
 // ============================================================
-//  卿涛 · Qing Tao  ─  前端主脚本
-//  - Tab 切换 / 导航 / 留言板 / CULTURE 渲染
-//  - 数据从 Turso API 拉取并渲染（仅展示，无编辑）
+//  卿涛 · Qing Tao
+//  - Home：snap-scroll 标题菜单（每个 panel 点击 → 切换到对应 page）
+//  - 其他页面：page-switch，各自独立可滚动
+//  - 字符从下至上浮现（chars）
+//  - WORKS / CULTURE / NEWS / GUESTBOOK 由 Turso 拉取
 // ============================================================
 
-// ========== Tab 切换 ==========
-const tabs = document.querySelectorAll('.tab');
-const pages = document.querySelectorAll('.page');
-function switchTab(tabName) {
-  tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
-  pages.forEach(p => p.classList.toggle('active', p.id === tabName));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  document.querySelector('.tabs')?.classList.remove('open');
-  history.replaceState(null, '', '#' + tabName);
-}
-tabs.forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
-document.querySelector('.brand').addEventListener('click', e => {
-  e.preventDefault();
-  switchTab('home');
-});
-switchTab(location.hash.replace('#', '') || 'home');
-
-// ========== 导航栏滚动阴影 ==========
-window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
-});
-
-// ========== 移动端菜单 ==========
-document.getElementById('menuBtn').addEventListener('click', () => {
-  document.querySelector('.tabs').classList.toggle('open');
-});
-
-// ============================================================
-//  API 客户端
-// ============================================================
-async function api(method, url, body) {
-  const opt = { method, headers: {} };
-  if (body) {
-    opt.headers['Content-Type'] = 'application/json';
-    opt.body = JSON.stringify(body);
-  }
-  const res = await fetch(url, opt);
-  let j = null;
-  try { j = await res.json(); } catch { /* 非 JSON */ }
-  if (!res.ok || (j && j.ok === false)) {
-    throw new Error((j && j.error) || `HTTP ${res.status}`);
-  }
-  return j || { ok: true };
-}
 const API = {
-  list:    (kind) => api('GET', `/api/${kind}`)
+  list: async (kind) => {
+    const r = await fetch(`/api/${kind}`);
+    const j = await r.json();
+    return (j && j.data) || [];
+  },
+  post: async (kind, body) => {
+    const r = await fetch(`/api/${kind}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return r.json();
+  }
 };
 
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
 // ============================================================
-//  工具
+//  字符拆分 → .ch，由 .chars.in 触发从下至上浮现
+//  stagger=true：逐字错开浮出（用于非主页）
+//  stagger=false：所有字同时浮出（用于主页 snap 菜单）
 // ============================================================
-function esc(s = '') {
-  return String(s).replace(/[&<>"']/g, c =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function wrapChars(el, stagger = true) {
+  if (el.dataset.wrapped === '1') return;
+  el.dataset.wrapped = '1';
+  const text = el.dataset.text || el.textContent;
+  el.textContent = '';
+  [...text].forEach((ch, i) => {
+    if (ch === ' ' || ch === '\u00A0') {
+      el.appendChild(document.createTextNode(' '));
+      return;
+    }
+    const span = document.createElement('span');
+    span.className = 'ch';
+    span.textContent = ch;
+    if (stagger) span.style.transitionDelay = `${i * 0.06}s`;
+    el.appendChild(span);
+  });
 }
-function el(tag, props = {}, ...children) {
-  const n = document.createElement(tag);
-  for (const [k, v] of Object.entries(props)) {
-    if (k === 'class')       n.className = v;
-    else if (k === 'html')   n.innerHTML = v;
-    else                     n.setAttribute(k, v);
+
+// ============================================================
+//  页面切换
+// ============================================================
+const tabs   = $$('.tab');
+const pages  = $$('.page');
+const snapEl = $('#snap');
+
+function switchPage(name) {
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  pages.forEach(p => p.classList.toggle('active', p.id === name));
+
+  // 回到顶部
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // home 内重置 snap 滚动位置
+  if (name === 'home' && snapEl) snapEl.scrollTop = 0;
+
+  history.replaceState(null, '', '#' + name);
+
+  // 当前页面字符入场
+  const page = document.getElementById(name);
+  if (page) {
+    page.querySelectorAll('.chars').forEach(el => {
+      el.classList.remove('in');
+      requestAnimationFrame(() => el.classList.add('in'));
+    });
   }
-  for (const c of children.flat()) {
-    if (c == null) continue;
-    n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-  }
-  return n;
 }
-function placeholderBg(seed = 0) {
-  const palettes = [
-    'linear-gradient(135deg,#45978C,#89CFC4)',
-    'linear-gradient(135deg,#F0E9CC,#F9F4DC)',
-    'linear-gradient(135deg,#89CFC4,#45978C)',
-    'linear-gradient(135deg,#2D6E65,#1A4A44)',
-    'linear-gradient(135deg,#6BB5AA,#F0E9CC)',
-    'linear-gradient(135deg,#45978C,#2D6E65)'
-  ];
-  return palettes[Math.abs(seed) % palettes.length];
+
+// tab 点击
+tabs.forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchPage(tab.dataset.tab);
+  });
+});
+
+// home 内 panel 点击（非 hero：必须有 data-tab 才生效）
+$$('.page-home .panel').forEach(panel => {
+  panel.addEventListener('click', (e) => {
+    e.preventDefault();
+    const tab = panel.dataset.tab;
+    if (tab) switchPage(tab);
+  });
+});
+
+// 品牌点击回 home
+$('.brand').addEventListener('click', (e) => {
+  e.preventDefault();
+  switchPage('home');
+});
+
+// ============================================================
+//  Home 内 snap-scroll 字符动画（panel 进入视口时触发）
+//  主页：所有字一起浮出（stagger=false），不区分字符顺序
+// ============================================================
+function triggerChars(el) {
+  if (!el) return;
+  el.classList.remove('in');
+  requestAnimationFrame(() => el.classList.add('in'));
 }
+
+const panelIO = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      const chars = en.target.querySelector('.chars');
+      triggerChars(chars);
+    }
+  });
+}, { threshold: 0.5 });
+
+$$('.page-home .panel').forEach(p => panelIO.observe(p));
 
 // ============================================================
 //  渲染：作品
 // ============================================================
 async function renderWorks() {
-  const left  = document.getElementById('worksColLeft');
-  const right = document.getElementById('worksColRight');
+  const left  = $('#worksColLeft');
+  const right = $('#worksColRight');
   if (!left || !right) return;
   left.innerHTML = ''; right.innerHTML = '';
-
   let rows = [];
-  try { ({ data: rows } = await API.list('works')); }
-  catch (e) { console.warn('拉取作品失败:', e); return; }
-
+  try { rows = await API.list('works'); } catch (e) { console.warn(e); return; }
   rows.forEach(w => {
-    const card = el('div', {
-      class: 'work-card',
-      data:  { id: w.id, cat: w.cat, author: w.author, year: w.year }
-    });
-    const cover = el('div', { class: 'work-cover' });
+    const card = document.createElement('article');
+    card.className = 'work-card';
+    card.dataset.author = w.author;
+    card.dataset.cat = w.cat;
+    const cover = document.createElement('div');
+    cover.className = 'work-cover';
     if (w.cover_url) cover.style.backgroundImage = `url(${esc(w.cover_url)})`;
-    else             cover.style.background = placeholderBg(w.id);
-    const body = el('div', { class: 'work-body' }, [
-      el('p', { class: 'work-type' }, w.cat_label || catLabel(w.cat)),
-      el('h4', {}, w.title || ''),
-      el('p', { class: 'work-date' }, String(w.year || ''))
-    ]);
-    card.append(cover, body);
+    const meta = document.createElement('div');
+    meta.className = 'work-meta';
+    meta.innerHTML = `<span>${esc(catLabel(w.cat))}</span><span>${esc(String(w.year || ''))}</span>`;
+    const title = document.createElement('h4');
+    title.className = 'work-title';
+    title.textContent = w.title || '';
+    card.append(cover, meta, title);
     (w.author === 'qing' ? right : left).appendChild(card);
   });
-
   bindWorksFilter();
 }
 
-// 左右菜单独立筛选
 function bindWorksFilter() {
-  const taoMenu  = document.querySelector('.glass-menu[data-author="tao"]');
-  const qingMenu = document.querySelector('.glass-menu[data-author="qing"]');
-  if (!taoMenu || !qingMenu) return;
-
-  const getActive = (menu) => {
-    const a = menu.querySelector('.glass-menu-item.active');
+  const taoTool  = $('.works-tool[data-author="tao"]');
+  const qingTool = $('.works-tool[data-author="qing"]');
+  if (!taoTool || !qingTool) return;
+  const getActive = (tool) => {
+    const a = tool.querySelector('li.active');
     return a ? a.dataset.cat : null;
   };
   const apply = () => {
-    const tCat = getActive(taoMenu);
-    const qCat = getActive(qingMenu);
-    document.querySelectorAll('#worksColLeft .work-card, #worksColRight .work-card')
-      .forEach(card => {
-        const author = card.dataset.author;
-        const cat    = card.dataset.cat;
-        let show = true;
-        if (author === 'tao'  && tCat) show = cat === tCat;
-        if (author === 'qing' && qCat) show = cat === qCat;
-        card.style.display = show ? '' : 'none';
-      });
+    const tCat = getActive(taoTool);
+    const qCat = getActive(qingTool);
+    $$('#worksColLeft .work-card, #worksColRight .work-card').forEach(c => {
+      const side = c.parentElement === $('#worksColRight') ? 'qing' : 'tao';
+      let show = true;
+      if (side === 'tao'  && tCat) show = c.dataset.cat === tCat;
+      if (side === 'qing' && qCat) show = c.dataset.cat === qCat;
+      c.style.display = show ? '' : 'none';
+    });
   };
-  const toggle = (menu) => (e) => {
-    const item = e.target.closest('.glass-menu-item');
-    if (!item) return;
-    const wasActive = item.classList.contains('active');
-    menu.querySelectorAll('.glass-menu-item').forEach(i => i.classList.remove('active'));
-    if (!wasActive) item.classList.add('active');
+  const toggle = (tool) => (e) => {
+    const li = e.target.closest('li');
+    if (!li) return;
+    const wasActive = li.classList.contains('active');
+    tool.querySelectorAll('li').forEach(i => i.classList.remove('active'));
+    if (!wasActive) li.classList.add('active');
     apply();
   };
-  if (!taoMenu._bound) {
-    taoMenu.addEventListener('click', toggle(taoMenu));
-    taoMenu._bound = true;
-  }
-  if (!qingMenu._bound) {
-    qingMenu.addEventListener('click', toggle(qingMenu));
-    qingMenu._bound = true;
-  }
+  taoTool.addEventListener('click', toggle(taoTool));
+  qingTool.addEventListener('click', toggle(qingTool));
 }
+
 function catLabel(c) {
   return ({ host: '主持', produce: '制作', judge: '评委', music: '音乐' })[c] || c;
 }
 
+function esc(s = '') {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 // ============================================================
-//  渲染：CULTURE 熏陶
+//  渲染：CULTURE / NEWS / PROFILE / GUESTBOOK
 // ============================================================
 async function renderCulture() {
-  const box = document.getElementById('cultureGrid');
+  const box = $('#cultureGrid');
   if (!box) return;
   box.innerHTML = '';
   let rows = [];
-  try { ({ data: rows } = await API.list('culture')); }
-  catch (e) { console.warn('拉取 CULTURE 失败:', e); return; }
+  try { rows = await API.list('culture'); } catch (e) { console.warn(e); return; }
   rows.forEach(c => {
-    const card = el('article', { class: 'culture-card', data: { id: c.id } });
-    const cover = el('div', { class: 'culture-cover' });
+    const card = document.createElement('article');
+    card.className = 'culture-card';
+    const cover = document.createElement('div');
+    cover.className = 'culture-cover';
     if (c.image_url) cover.style.backgroundImage = `url(${esc(c.image_url)})`;
-    else             cover.style.background = placeholderBg(c.id);
-    card.append(
-      cover,
-      el('h3', { class: 'culture-title' }, c.title || ''),
-      el('p',  { class: 'culture-meta'  }, [c.author, c.year].filter(Boolean).join(' · ')),
-      el('p',  { class: 'culture-desc'  }, c.description || '')
-    );
+    const h3 = document.createElement('h3'); h3.className = 'culture-title'; h3.textContent = c.title || '';
+    const m  = document.createElement('p');  m.className  = 'culture-meta';
+    m.textContent = [c.author, c.year].filter(Boolean).join(' · ');
+    const d  = document.createElement('p');  d.className  = 'culture-desc';
+    d.textContent = c.description || '';
+    card.append(cover, h3, m, d);
     box.appendChild(card);
   });
 }
 
-// ============================================================
-//  渲染：动态（NEWS）
-// ============================================================
 async function renderUpdates() {
-  const box = document.getElementById('updatesList');
+  const box = $('#updatesList');
   if (!box) return;
   box.innerHTML = '';
   let rows = [];
-  try { ({ data: rows } = await API.list('updates')); }
-  catch (e) { console.warn('拉取动态失败:', e); return; }
+  try { rows = await API.list('updates'); } catch (e) { console.warn(e); return; }
   rows.forEach(u => {
-    const item = el('div', { class: 't-item' });
-    item.append(
-      el('div', { class: 't-dot' }),
-      el('div', { class: 't-card glass-card' }, [
-        el('span', { class: 't-date' }, u.date || ''),
-        el('p',  {}, u.content || '')
-      ])
-    );
+    const item = document.createElement('article');
+    item.className = 't-item';
+    item.innerHTML = `
+      <div class="t-date">${esc(u.date || '')}</div>
+      <p class="t-content">${esc(u.content || '')}</p>`;
     box.appendChild(item);
   });
 }
 
-// ============================================================
-//  渲染：个人简介（PROFILE）
-// ============================================================
 async function renderProfile() {
   let rows = [];
-  try { ({ data: rows } = await API.list('profile')); }
-  catch (e) { console.warn('拉取 profile 失败:', e); return; }
+  try { rows = await API.list('profile'); } catch (e) { console.warn(e); return; }
   rows.forEach(p => {
     const card = document.querySelector(`.profile-card[data-profile="${p.author_key}"]`);
-    if (card) {
-      const photo = card.querySelector('[data-profile-photo]');
-      if (photo && p.photo_url) {
-        photo.style.backgroundImage = `url(${p.photo_url})`;
-        photo.style.backgroundSize = 'cover';
-        photo.style.backgroundPosition = 'center';
-        photo.innerHTML = '';
-      }
-      if (p.text_content && (p.author_key === 'tao' || p.author_key === 'qing')) {
-        const tagEl = card.querySelector('.profile-tag b');
-        if (tagEl) tagEl.innerHTML = p.text_content.split('').join('&nbsp;');
-      }
+    if (!card) return;
+    if (p.photo_url) {
+      const ph = card.querySelector('.profile-photo');
+      if (ph) ph.style.backgroundImage = `url(${p.photo_url})`;
     }
-    if (p.author_key === 'middle') {
+    if (p.author_key === 'middle' && p.text_content) {
       const mid = document.querySelector('.profile-middle');
-      if (mid && p.text_content) mid.textContent = p.text_content;
+      if (mid) mid.innerHTML = p.text_content.split('\n').map(esc).join('<br>');
     }
   });
 }
 
-// ============================================================
-//  留言板（guestbook）
-// ============================================================
-const form     = document.getElementById('guestForm');
-const msgList  = document.getElementById('msgList');
-
+const form    = $('#guestForm');
+const msgList = $('#msgList');
 function renderMsg(name, message, prepend = true) {
-  const item = el('div', { class: 'msg-item' },
-    el('b', {}, name),
-    el('p',  {}, message)
-  );
+  const item = document.createElement('div');
+  item.className = 'msg-item';
+  const b = document.createElement('b'); b.textContent = name;
+  const p = document.createElement('p'); p.textContent = message;
+  item.append(b, p);
   if (prepend) msgList.prepend(item); else msgList.appendChild(item);
 }
-
 async function loadMessages() {
   try {
-    const j = await API.list('guestbook');
+    const rows = await API.list('guestbook');
     msgList.innerHTML = '';
-    (j.data || []).slice().reverse().forEach(m => renderMsg(m.name, m.message, false));
-  } catch (e) { console.warn('加载留言失败:', e); }
+    rows.slice().reverse().forEach(m => renderMsg(m.name, m.message, false));
+  } catch (e) { console.warn(e); }
 }
-
-form.addEventListener('submit', async e => {
+form?.addEventListener('submit', async e => {
   e.preventDefault();
-  const name = document.getElementById('gbName').value.trim();
-  const msg  = document.getElementById('gbMsg').value.trim();
+  const name = $('#gbName').value.trim();
+  const msg  = $('#gbMsg').value.trim();
   if (!name || !msg) return;
   try {
-    await api('POST', '/api/guestbook', { name, message: msg });
+    await API.post('guestbook', { name, message: msg });
     renderMsg(name, msg, true);
     form.reset();
-  } catch (err) { console.warn('留言提交失败:', err); }
+  } catch (err) { console.warn(err); }
 });
 
 // ============================================================
-//  启动：拉取所有数据
+//  启动
 // ============================================================
-(async function init() {
-  await Promise.all([
+window.addEventListener('DOMContentLoaded', () => {
+  // 1. 拆字符：主页 stagger=false（同时浮现），其他页 stagger=true（依次浮现）
+  $$('.chars').forEach(el => {
+    const inHome = !!el.closest('.page-home');
+    wrapChars(el, !inHome);
+  });
+
+  // 2. 让首屏 home panel 立即入场（兜底，等 IO 异步触发）
+  $$('.page-home .panel').forEach(p => {
+    const chars = p.querySelector('.chars');
+    triggerChars(chars);
+  });
+
+  // 3. URL hash → 切到对应页
+  const init = (location.hash || '#home').replace('#', '');
+  if (init && document.getElementById(init)) switchPage(init);
+
+  // 4. 拉数据
+  Promise.all([
     renderWorks(),
     renderCulture(),
     renderUpdates(),
     renderProfile(),
     loadMessages()
   ]);
-})();
+});
