@@ -6,7 +6,7 @@
 import { getDB, ensureSchema, seedIfEmpty } from '../lib/db.js';
 import { ok, fail, readJson } from './_helpers.js';
 
-const COLS = ['author', 'cat', 'year', 'title', 'cover_url'];
+const COLS = ['author', 'cat', 'year', 'title', 'cover_url', 'link_url'];
 
 export async function GET() {
   try {
@@ -31,8 +31,8 @@ export async function POST(request) {
     await ensureSchema();
     const db = getDB();
     const r = await db.execute({
-      sql: `INSERT INTO works (${COLS.join(', ')}) VALUES (?, ?, ?, ?, ?)`,
-      args: [rec.author, rec.cat, Number(rec.year), rec.title, rec.cover_url || null]
+      sql: `INSERT INTO works (${COLS.join(', ')}) VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [rec.author, rec.cat, Number(rec.year), rec.title, rec.cover_url || null, rec.link_url || null]
     });
     return ok({ id: Number(r.lastInsertRowid) });
   } catch (e) { return fail(e.message, 500); }

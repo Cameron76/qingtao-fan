@@ -30,10 +30,11 @@
     <!-- ============ HOME：1 hero + 5 英文 panel 的 snap-scroll 菜单 ============ -->
     <section class="page page-home active" id="home">
       <div class="snap" id="snap">
-        <!-- 第一页：hero（卿涛青山在人未老） -->
+        <!-- 第一页：hero（卿涛 + 青山在，人未老） -->
         <div class="panel hero">
           <div class="panel-inner">
-            <h2 class="title chars" data-text="卿涛青山在人未老">卿涛青山人在未老</h2>
+            <h1 class="hero-title chars" data-text="卿涛">卿涛</h1>
+            <p class="hero-sub chars" data-text="青山在，人未老">青山在，人未老</p>
           </div>
         </div>
 
@@ -95,47 +96,64 @@
       </div>
     </section>
 
-    <!-- ============ WORKS：独立可滚动页 ============ -->
+    <!-- ============ WORKS：forms.world 风格单列布局 ============ -->
     <section class="page" id="works">
       <header class="page-head">
         <p class="kicker">DISCOGRAPHY</p>
-        <h2 class="page-title chars" data-text="作 品">作&nbsp;&nbsp;品</h2>
+        <h2 class="page-title chars" data-text="作品">作&nbsp;&nbsp;品</h2>
         <div class="page-line"></div>
       </header>
-      <div class="works-tools">
-        <div class="works-tool" data-author="tao">
-          <span class="glyph">涛</span>
-          <ul>
-            <li data-cat="host">主持</li>
-            <li data-cat="produce">制作</li>
-            <li data-cat="judge">评委</li>
-            <li data-cat="music">音乐</li>
-          </ul>
-        </div>
-        <div class="works-tool" data-author="qing">
-          <ul>
-            <li data-cat="host">主持</li>
-            <li data-cat="produce">制作</li>
-            <li data-cat="judge">评委</li>
-            <li data-cat="music">音乐</li>
-          </ul>
-          <span class="glyph">卿</span>
-        </div>
-      </div>
-      <div class="works-grid">
-        <div class="works-col" id="worksColLeft"></div>
-        <div class="works-col" id="worksColRight"></div>
+
+      <!-- 顶部 filter chips -->
+      <nav class="filter-chips" id="filterChips">
+        <button class="chip active" data-cat="all">ALL</button>
+        <button class="chip" data-cat="host">主持</button>
+        <button class="chip" data-cat="produce">制作</button>
+        <button class="chip" data-cat="judge">评委</button>
+        <button class="chip" data-cat="music">音乐</button>
+      </nav>
+
+      <!-- grid view：单列，每个作品占满 -->
+      <div class="works-grid" id="worksGrid"></div>
+
+      <!-- list view：纯文字行 -->
+      <div class="works-list" id="worksList"></div>
+
+      <!-- view toggle -->
+      <div class="view-toggle" id="viewToggle">
+        <button class="vt-btn active" data-view="grid">GRID VIEW</button>
+        <button class="vt-btn"        data-view="list">LIST VIEW</button>
       </div>
     </section>
 
-    <!-- ============ CULTURE：独立可滚动页 ============ -->
+    <!-- ============ CULTURE：mschristensen 风格全宽卡片 ============ -->
     <section class="page" id="culture">
       <header class="page-head">
         <p class="kicker">CULTURE</p>
         <h2 class="page-title chars" data-text="熏陶">熏&nbsp;&nbsp;陶</h2>
         <div class="page-line"></div>
       </header>
-      <div class="culture-grid" id="cultureGrid"></div>
+      <nav class="filter-chips" id="cultureFilter">
+        <button class="chip active" data-type="all">ALL</button>
+        <button class="chip" data-type="interview">INTERVIEW</button>
+        <button class="chip" data-type="book">BOOK</button>
+        <button class="chip" data-type="script">SCRIPT</button>
+      </nav>
+      <div class="culture-list" id="cultureList"></div>
+    </section>
+
+    <!-- ============ CULTURE DETAIL：lokasasmita 风格长文详情 ============ -->
+    <section class="page" id="cultureDetail">
+      <button class="detail-back" id="cultureBack">← 返回熏陶列表</button>
+      <div class="detail-about">
+        <p class="detail-kicker">ABOUT</p>
+        <h1 class="detail-title" id="detailTitle"></h1>
+        <div class="detail-meta" id="detailMeta"></div>
+      </div>
+      <div class="detail-cover-wrap" id="detailCoverWrap">
+        <div class="detail-cover" id="detailCover"></div>
+      </div>
+      <article class="detail-article" id="detailArticle"></article>
     </section>
 
     <!-- ============ NEWS：独立可滚动页 ============ -->

@@ -132,17 +132,32 @@ html, body {
 }
 .panel .title {
   font-family: "Noto Serif SC", "Cormorant Garamond", serif;
-  font-size: clamp(48px, 7.5vw, 96px);
+  font-size: clamp(36px, 5.5vw, 72px);
   font-weight: 300;
-  letter-spacing: 12px;
+  letter-spacing: 10px;
   line-height: 1.1;
   color: #fff;
 }
-.panel.hero .title {
+.panel.hero .hero-title {
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(32px, 5vw, 68px);
-  letter-spacing: 6px;
+  font-size: clamp(48px, 8vw, 100px);
   font-weight: 300;
+  letter-spacing: 16px;
+  line-height: 1;
+  color: #fff;
+  margin: 0 0 28px;
+}
+.panel.hero .hero-sub {
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(15px, 2vw, 26px);
+  font-weight: 200;
+  letter-spacing: 9px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.4;
+  margin: 0;
+}
+.panel.hero .chars {
+  display: block;
 }
 
 .home-foot {
@@ -233,111 +248,361 @@ html, body {
   margin: 18px 0;
 }
 
-/* ---------- WORKS ---------- */
-.works-tools {
-  display: flex; justify-content: space-between;
-  margin-bottom: 36px;
-  padding: 0 8px;
+/* ---------- WORKS（forms.world 风格 · 黑底白字） ---------- */
+
+/* works 页：黑底白字 */
+.page#works {
+  background: #000;
+  color: #fff;
+  position: relative;
 }
-.works-tool {
-  display: flex; flex-direction: column;
-  gap: 14px;
+.page#works .page-head .kicker { color: rgba(255,255,255,0.5); }
+.page#works .page-title { color: #fff; }
+.page#works .page-line  { background: rgba(255,255,255,0.2); }
+
+/* 顶部 filter chips（ALL / 主持 / 制作 / 评委 / 音乐） */
+.filter-chips {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 40px;
 }
-.works-tool[data-author="qing"] { flex-direction: column-reverse; }
-.works-tool .glyph {
-  font-family: "Noto Serif SC", serif;
-  font-size: 28px; font-weight: 300;
-  text-align: center;
-  opacity: 0.85;
-}
-.works-tool ul {
-  list-style: none;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.works-tool li {
+.filter-chips .chip {
   font-family: "Cormorant Garamond", "Noto Sans SC", serif;
-  font-size: 13px; letter-spacing: 4px;
-  padding: 6px 0;
+  font-size: 12px; letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  color: #fff;
   cursor: pointer;
-  color: rgba(255,255,255,0.55);
-  transition: color 0.2s ease;
-  user-select: none;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
-.works-tool li:hover { color: #fff; }
-.works-tool li.active { color: #fff; font-weight: 600; }
+.filter-chips .chip:hover { border-color: #fff; }
+.filter-chips .chip.active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+/* --- GRID VIEW（forms.world 风格：单列、每个作品占满） --- */
 .works-grid {
-  display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  gap: 36px;
-  max-width: 760px; margin: 0 auto;
-}
-.works-grid::before {
-  content: '';
-  grid-column: 2;
-  width: 1px;
-  background: rgba(255,255,255,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
 }
 .works-col {
   display: flex; flex-direction: column;
-  gap: 24px;
+  gap: 56px;
 }
+.works-col-divider { display: none; }
 .work-card {
   display: flex; flex-direction: column;
-  gap: 10px;
+  gap: 14px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: worksFadeUp 0.7s cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+}
+@keyframes worksFadeUp {
+  to { opacity: 1; transform: translateY(0); }
 }
 .work-cover {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  background: #222;
-  background-size: cover; background-position: center;
-  filter: grayscale(30%);
-  transition: filter 0.3s ease;
-}
-.work-card:hover .work-cover { filter: grayscale(0%); }
-.work-meta {
-  display: flex; justify-content: space-between;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 12px; letter-spacing: 4px;
-  color: rgba(255,255,255,0.65);
-  text-transform: uppercase;
-}
-.work-title {
-  font-family: "Noto Serif SC", serif;
-  font-size: 16px; font-weight: 400;
-  letter-spacing: 3px;
-}
-
-/* ---------- CULTURE ---------- */
-.culture-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 28px;
-}
-.culture-card {
-  display: flex; flex-direction: column;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  overflow: hidden;
-}
-.culture-cover {
-  width: 100%; aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   background: #1a1a1a;
   background-size: cover; background-position: center;
-  filter: grayscale(40%);
+  transition: transform 0.5s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
-.culture-card:hover .culture-cover { filter: grayscale(0%); }
-.culture-title {
-  font-family: "Noto Serif SC", serif;
-  font-size: 16px; font-weight: 400;
-  letter-spacing: 4px;
-  margin: 16px 18px 4px;
-}
-.culture-meta {
+.work-card:hover .work-cover { transform: scale(1.02); }
+.work-meta {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
   font-family: "Cormorant Garamond", serif;
   font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.work-meta .meta-dot { color: rgba(255,255,255,0.35); }
+.work-title {
+  font-family: "Noto Serif SC", "Cormorant Garamond", serif;
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 400;
+  letter-spacing: 4px;
+  line-height: 1.05;
+  color: #fff;
+}
+.work-title em {
+  font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 2px;
+  margin-left: 8px;
+  color: rgba(255,255,255,0.65);
+}
+.work-tags {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 4px;
+}
+.work-tag {
+  font-family: "Cormorant Garamond", "Noto Sans SC", serif;
+  font-size: 11px; letter-spacing: 2px;
+  padding: 3px 10px;
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* --- LIST VIEW --- */
+.works-list { display: none; flex-direction: column; gap: 0; }
+.works-list .list-row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 24px;
+  align-items: baseline;
+  padding: 26px 0;
+  border-top: 1px solid rgba(255,255,255,0.18);
+  opacity: 0;
+  transform: translateY(12px);
+  animation: worksFadeUp 0.6s cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+}
+.works-list .list-row:last-child { border-bottom: 1px solid rgba(255,255,255,0.18); }
+.works-list .list-cat {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.works-list .list-title {
+  font-family: "Noto Serif SC", "Cormorant Garamond", serif;
+  font-size: clamp(20px, 2.4vw, 32px);
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: #fff;
+}
+.works-list .list-title em {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-weight: 300;
+  margin-left: 8px;
+  color: rgba(255,255,255,0.65);
+}
+.works-list .list-tags {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.works-list .list-tag {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 10px; letter-spacing: 2px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* View toggle（固定视口右下角，仿 forms.world · 黑底白字） */
+.view-toggle {
+  position: fixed;
+  right: 32px;
+  bottom: 28px;
+  z-index: 80;
+  display: inline-flex;
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 4px;
+}
+body:has(.page-home.active) .view-toggle { display: none; }
+.view-toggle .vt-btn {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px; letter-spacing: 4px;
+  text-transform: uppercase;
+  background: transparent;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.view-toggle .vt-btn:hover { color: #fff; }
+.view-toggle .vt-btn.active {
+  background: #fff;
+  color: #000;
+}
+
+/* works 页 edit 模式下需要看的样式 */
+body.edit-mode .page#works .work-card,
+body.edit-mode .page#works .list-row { outline: 1px dashed rgba(255,255,255,0.3); }
+
+/* 视图切换的渐隐渐显（layout 切换时） */
+.works-grid.is-leaving,
+.works-list.is-leaving,
+.culture-list.is-leaving {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.works-grid.is-entering,
+.works-list.is-entering {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.works-grid,
+.works-list,
+.culture-list { transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* ---------- CULTURE ---------- */
+/* ---------- CULTURE（mschristensen 风格 · 黑底全宽行） ---------- */
+.culture-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.culture-card {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 32px 0;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: cultureFadeUp 0.8s cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+.culture-card:last-child { border-bottom: 1px solid rgba(255,255,255,0.12); }
+@keyframes cultureFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+.culture-card:hover { opacity: 0.85; }
+
+.culture-meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  min-width: 160px;
+}
+.culture-type-tag {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  padding: 4px 12px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.culture-author {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 13px; letter-spacing: 3px;
   color: rgba(255,255,255,0.6);
   text-transform: uppercase;
-  margin: 0 18px 10px;
+}
+.culture-title {
+  font-family: "Noto Serif SC", "Cormorant Garamond", serif;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 0;
+  flex: 1;
+  transition: transform 0.5s cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+.culture-card:hover .culture-title { transform: translateX(8px); }
+
+/* ---------- CULTURE DETAIL（lokasasmita 风格长文详情页） ---------- */
+#cultureDetail {
+  min-height: 100vh;
+  padding: 120px 0 200px;
+}
+#cultureDetail .detail-back {
+  display: block;
+  margin: 0 auto 80px;
+  padding: 12px 0;
+  width: 100%;
+  max-width: 1200px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 14px; letter-spacing: 3px;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+#cultureDetail .detail-back:hover { color: #fff; }
+
+.detail-about {
+  max-width: 1200px;
+  margin: 0 auto 64px;
+  padding: 0 32px;
+}
+.detail-kicker {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 12px; letter-spacing: 5px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  margin: 0 0 24px;
+}
+.detail-title {
+  font-family: "Noto Serif SC", "Cormorant Garamond", serif;
+  font-size: clamp(40px, 7vw, 96px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 3px;
+  color: #fff;
+  margin: 0 0 32px;
+}
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 13px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+
+.detail-cover-wrap {
+  max-width: 1200px;
+  margin: 0 auto 80px;
+  padding: 0 32px;
+}
+.detail-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #111;
+  background-size: cover;
+  background-position: center;
+}
+
+.detail-article {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 32px;
+  font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+  font-size: 17px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.85);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.detail-article h1,
+.detail-article h2,
+.detail-article h3 {
+  font-family: "Noto Serif SC", "Cormorant Garamond", serif;
+  font-weight: 400;
+  color: #fff;
+  margin: 48px 0 24px;
+}
+.detail-article h1 { font-size: 32px; letter-spacing: 2px; }
+.detail-article h2 { font-size: 24px; letter-spacing: 2px; }
+.detail-article h3 { font-size: 18px; letter-spacing: 1px; }
+.detail-article p { margin: 0 0 24px; }
+.detail-article ul, .detail-article ol { margin: 0 0 24px; padding-left: 24px; }
+.detail-article li { margin: 8px 0; }
+.detail-article a { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.detail-article img { max-width: 100%; margin: 32px 0; }
+.detail-article blockquote {
+  border-left: 2px solid rgba(255,255,255,0.3);
+  padding-left: 20px;
+  color: rgba(255,255,255,0.7);
+  margin: 32px 0;
 }
 .culture-desc {
   font-size: 13px; line-height: 1.7;
@@ -353,8 +618,8 @@ html, body {
 }
 .t-item {
   display: grid;
-  grid-template-columns: 90px 1fr;
-  gap: 20px;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
   padding: 18px 0;
   border-top: 1px solid rgba(255,255,255,0.18);
 }
@@ -362,6 +627,7 @@ html, body {
   font-family: "Cormorant Garamond", serif;
   font-size: 13px; letter-spacing: 4px;
   opacity: 0.7;
+  white-space: nowrap;
 }
 .t-content {
   font-family: "Noto Sans SC", serif;
@@ -435,30 +701,207 @@ html, body {
 }
 .msg-item p { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.85); }
 
+/* ============ EDIT 模式 ============ */
+.edit-toggle {
+  position: fixed;
+  bottom: 28px; left: 32px;
+  z-index: 90;
+  background: #fff; color: #000;
+  border: none;
+  padding: 10px 22px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 12px; letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+body:has(.page-home.active) .edit-toggle { display: none; }
+.edit-toggle:hover { background: #ccc; }
+.edit-toggle.active { background: #000; color: #fff; outline: 1px solid #fff; }
+
+.add-item-btn {
+  display: none;
+  margin: 32px auto 0;
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 12px 36px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 12px; letter-spacing: 6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.add-item-btn:hover { background: #fff; color: #000; }
+body.edit-mode .add-item-btn { display: block; }
+
+.item-actions {
+  position: absolute;
+  top: 8px; right: 8px;
+  display: none;
+  gap: 6px;
+  z-index: 5;
+}
+body.edit-mode .item-actions { display: flex; }
+.item-actions button {
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 5px 12px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px; letter-spacing: 3px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.2s ease;
+}
+.item-actions button:hover { background: #fff; color: #000; }
+.item-actions button.del { border-color: #ff6b6b; color: #ff6b6b; }
+.item-actions button.del:hover { background: #ff6b6b; color: #000; }
+
+.work-card, .culture-card, .guest-card { position: relative; }
+.t-item { position: relative; }
+
+.edit-form {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 24px;
+  margin: 14px 0;
+  max-width: 760px;
+}
+body.edit-mode .edit-form { display: flex; }
+
+.form-row {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.form-row label {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+.form-row input,
+.form-row textarea,
+.form-row select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding: 10px 0;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+  border-bottom-color: #fff;
+}
+.form-row select option { background: #000; color: #fff; }
+.form-row textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+.form-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 6px;
+}
+.form-actions button {
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 9px 24px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 12px; letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.form-actions button:hover { background: #fff; color: #000; }
+.form-actions button.save { background: #fff; color: #000; }
+.form-actions button.save:hover { background: #ccc; }
+.form-actions button.cancel:hover { background: #000; color: #fff; }
+
+.image-row {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.image-row .image-preview {
+  width: 100%;
+  max-width: 200px;
+  aspect-ratio: 4 / 3;
+  background: #222;
+  background-size: cover; background-position: center;
+  border: 1px dashed rgba(255,255,255,0.3);
+}
+.image-row input[type="file"] {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+}
+.image-row input[type="file"]::file-selector-button {
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 6px 14px;
+  margin-right: 12px;
+  font-family: inherit;
+  font-size: 11px; letter-spacing: 3px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+/* PROFILE 在 edit 模式下可点击图片 / 文字 */
+body.edit-mode .profile-photo {
+  cursor: pointer;
+  outline: 1px dashed rgba(255,255,255,0.4);
+  outline-offset: 4px;
+}
+body.edit-mode .profile-middle {
+  cursor: text;
+  outline: 1px dashed rgba(255,255,255,0.4);
+  outline-offset: 4px;
+  padding: 12px;
+}
+body.edit-mode .profile-middle[contenteditable="true"]:focus {
+  outline: 1px solid rgba(255,255,255,0.7);
+}
+
+.profile-photo input[type="file"],
+.profile-middle .pm-toolbar {
+  display: none;
+}
+body.edit-mode .profile-photo .photo-file { display: none; }
+body.edit-mode .profile-middle .pm-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+.profile-middle .pm-toolbar button {
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 4px 12px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px; letter-spacing: 3px;
+  cursor: pointer;
+}
+
 /* ============ 响应式 ============ */
 @media (max-width: 960px) {
   .nav { padding: 20px 28px; }
   .tabs { gap: 16px; }
   .tab { font-size: 11px; letter-spacing: 2px; }
   .panel-inner { padding: 0 24px; }
-  .panel .title { font-size: clamp(36px, 7vw, 64px); letter-spacing: 8px; }
-  .panel.hero .title { font-size: clamp(22px, 5vw, 40px); letter-spacing: 4px; }
+  .panel .title { font-size: clamp(28px, 5vw, 48px); letter-spacing: 6px; }
+  .panel.hero .hero-title { font-size: clamp(36px, 7vw, 64px); letter-spacing: 10px; }
+  .panel.hero .hero-sub { font-size: clamp(12px, 1.6vw, 18px); letter-spacing: 5px; }
   .page:not(.page-home) { padding: 100px 28px 80px; }
   .page-title { letter-spacing: 8px; margin-bottom: 20px; }
   .profile-row { grid-template-columns: 1fr; gap: 28px; }
   .profile-middle { order: 0; }
-  .works-tools { flex-direction: column; align-items: center; gap: 24px; }
-  .works-tool[data-author="qing"] { flex-direction: column; }
-  .works-tool ul { flex-direction: row; flex-wrap: wrap; gap: 12px; }
-  .works-grid { grid-template-columns: 1fr; }
-  .works-grid::before { display: none; }
+  .works-grid { gap: 48px; }
+.works-list .list-row { grid-template-columns: 80px 1fr; }
+.works-list .list-tags { grid-column: 1 / -1; justify-content: flex-start; }
   .guest-grid { grid-template-columns: 1fr; }
-  .t-item { grid-template-columns: 1fr; gap: 6px; }
+  .t-item { grid-template-columns: 200px 1fr; gap: 16px; }
 }
 @media (max-width: 560px) {
   .brand-cn { font-size: 20px; letter-spacing: 4px; }
   .brand-en { font-size: 9px; }
   .tabs { display: none; }
-  .panel .title { font-size: clamp(28px, 6vw, 44px); letter-spacing: 4px; }
-  .panel.hero .title { font-size: clamp(18px, 4.5vw, 30px); letter-spacing: 3px; }
+  .panel .title { font-size: clamp(22px, 4.5vw, 32px); letter-spacing: 4px; }
+  .panel.hero .hero-title { font-size: clamp(28px, 6vw, 44px); letter-spacing: 6px; }
+  .panel.hero .hero-sub { font-size: clamp(10px, 1.8vw, 14px); letter-spacing: 3px; }
 }
