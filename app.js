@@ -369,10 +369,9 @@ function applyFilter() {
     row.style.animationDelay = `${i * 0.04}s`;
     l.appendChild(row);
   });
-  // list 默认隐藏
-  l.style.display = 'none';
   // grid 默认显示
-  g.style.display = 'flex';
+  g.classList.remove('is-hidden');
+  l.classList.add('is-hidden');
 }
 
 async function renderWorks() {
@@ -428,10 +427,10 @@ function bindViewToggle() {
     // 渐隐 → 切换 display → 渐显
     fromEl.classList.add('is-leaving');
     setTimeout(() => {
-      fromEl.style.display = 'none';
+      fromEl.classList.add('is-hidden');
       fromEl.classList.remove('is-leaving');
+      toEl.classList.remove('is-hidden');
       toEl.classList.add('is-entering');
-      toEl.style.display = view === 'grid' ? 'flex' : 'flex';
       // 强制 reflow 再去掉 is-entering 让 transition 触发
       void toEl.offsetWidth;
       toEl.classList.remove('is-entering');

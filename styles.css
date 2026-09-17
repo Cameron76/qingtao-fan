@@ -340,11 +340,20 @@ html, body {
 }
 
 /* --- GRID VIEW（forms.world 风格：单列、每个作品占满） --- */
-
-
+.works-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+.works-grid.is-hidden { display: none; }
 
 /* --- LIST VIEW --- */
-.works-list { display: none; flex-direction: column; gap: 0; }
+.works-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.works-list.is-hidden { display: none; }
 .works-list .list-row {
   display: grid;
   grid-template-columns: 110px 1fr auto;
