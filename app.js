@@ -429,10 +429,10 @@ function bindViewToggle() {
 }
 
 function catLabel(c) {
-  return ({ host: '主持', produce: '制作', judge: '评委', music: '音乐' })[c] || c;
+  return ({ host: '主持', produce: '制作', judge: '评委', music: '音乐', interview: '访谈' })[c] || c;
 }
 function authorLabel(a) {
-  return ({ tao: '涛', qing: '卿', both: '卿+涛', interview: '访谈' })[a] || a;
+  return ({ tao: '涛', qing: '卿', both: '卿+涛' })[a] || a;
 }
 
 // ============================================================
@@ -834,14 +834,14 @@ function openWorksForm(row) {
       { name: 'author', label: '归属', type: 'select', options: [
         { value: 'tao',  label: '涛' },
         { value: 'qing', label: '卿' },
-        { value: 'both', label: '卿+涛' },
-        { value: 'interview', label: '访谈' }
+        { value: 'both', label: '卿+涛' }
       ]},
       { name: 'cat', label: '类别', type: 'select', options: [
         { value: 'host',    label: '主持' },
         { value: 'produce', label: '制作' },
         { value: 'judge',   label: '评委' },
-        { value: 'music',   label: '音乐' }
+        { value: 'music',   label: '音乐' },
+        { value: 'interview', label: '访谈' }
       ]},
       { name: 'title', label: '标题' },
       { name: 'year', label: '年份', type: 'number', placeholder: '如 2018' },
