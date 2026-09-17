@@ -220,16 +220,6 @@ function buildWorkCard(w) {
   card.dataset.author = w.author;
   card.dataset.cat = w.cat;
 
-  // 类别 (小字 monospace)
-  const cat = document.createElement('p');
-  cat.className = 'work-meta';
-  const catParts = [
-    esc(catLabel(w.cat)),
-    esc(authorLabel(w.author))
-  ];
-  if (w.year) catParts.push(esc(String(w.year)));
-  cat.textContent = catParts.join(' · ');
-
   // 标题：大字 serif（title）+ 斜体（year 或占位）
   const title = document.createElement('h3');
   title.className = 'work-title';
@@ -269,7 +259,7 @@ function buildWorkCard(w) {
     }
   });
 
-  card.append(cat, title, tags, cover, acts);
+  card.append(title, tags, cover, acts);
 
   // 有链接时整卡可点击跳转
   if (w.link_url) {
