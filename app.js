@@ -986,6 +986,49 @@ form?.addEventListener('submit', async e => {
 });
 
 // ============================================================
+//  小屏菜单：MENU 按钮 + tabs 竖向下拉
+// ============================================================
+(function bindMobileMenu() {
+  const btn  = $('#menuBtn');
+  const tabs = $('#tabs');
+  if (!btn || !tabs) return;
+
+  function close() {
+    btn.setAttribute('aria-expanded', 'false');
+    tabs.classList.remove('is-open');
+  }
+  function open() {
+    btn.setAttribute('aria-expanded', 'true');
+    tabs.classList.add('is-open');
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (btn.getAttribute('aria-expanded') === 'true') close();
+    else open();
+  });
+
+  // 点外部自动关闭
+  document.addEventListener('click', (e) => {
+    if (!tabs.classList.contains('is-open')) return;
+    if (e.target.closest('#tabs') || e.target.closest('#menuBtn')) return;
+    close();
+  });
+
+  // 选完一个 tab 后自动收起
+  tabs.addEventListener('click', (e) => {
+    const tab = e.target.closest('.tab');
+    if (!tab) return;
+    close();
+  });
+
+  // 切回大屏时清理展开状态
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 560) close();
+  });
+})();
+
+// ============================================================
 //  启动
 // ============================================================
 window.addEventListener('DOMContentLoaded', () => {
