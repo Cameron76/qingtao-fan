@@ -257,7 +257,7 @@ function buildWorkCard(w) {
   // 封面
   const cover = document.createElement('div');
   cover.className = 'work-cover';
-  if (w.cover_url) cover.style.backgroundImage = `url(${esc(w.cover_url)})`;
+  if (w.cover_url) cover.style.backgroundImage = `url("${w.cover_url}")`;
 
   // 编辑 / 删除
   const acts = makeItemActions({
@@ -468,7 +468,7 @@ function buildCultureCard(c, index) {
   // 封面图
   const cover = document.createElement('div');
   cover.className = 'culture-cover';
-  if (c.image_url) cover.style.backgroundImage = `url(${esc(c.image_url)})`;
+  if (c.image_url) cover.style.backgroundImage = `url("${c.image_url}")`;
 
   // meta 行
   const meta = document.createElement('div');
@@ -599,7 +599,7 @@ async function renderProfile() {
     if (!card) return;
     if (p.photo_url) {
       const ph = card.querySelector('.profile-photo');
-      if (ph) ph.style.backgroundImage = `url(${esc(p.photo_url)})`;
+      if (ph) ph.style.backgroundImage = `url("${p.photo_url}")`;
     }
     if (p.author_key === 'middle' && p.text_content) {
       const mid = document.querySelector('.profile-middle');
